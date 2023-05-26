@@ -1,0 +1,12 @@
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.csproj.AssemblyReference.cache
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.GeneratedMSBuildEditorConfig.editorconfig
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.AssemblyInfoInputs.cache
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.AssemblyInfo.cs
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.csproj.CoreCompileInputs.cache
+S:\Code\Whois.NET\bin\Debug\net7.0\Whois.NET.deps.json
+S:\Code\Whois.NET\bin\Debug\net7.0\Whois.NET.dll
+S:\Code\Whois.NET\bin\Debug\net7.0\Whois.NET.pdb
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.dll
+S:\Code\Whois.NET\obj\Debug\net7.0\refint\Whois.NET.dll
+S:\Code\Whois.NET\obj\Debug\net7.0\Whois.NET.pdb
+S:\Code\Whois.NET\obj\Debug\net7.0\ref\Whois.NET.dll
