@@ -34,7 +34,6 @@ namespace WhoisNET.Network
 
             Address = Utilities.GetDomain(Address.Replace("http://", "").Replace("https://", ""));
 
-
             using (var Connection = new TcpConnection(Server))
             {
                 Connection.Connect();
