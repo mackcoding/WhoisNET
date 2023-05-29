@@ -5,6 +5,27 @@ namespace WhoisNET.Network
 {
     public static class QueryTools
     {
+        public static string TestWhois(string Address)
+        {
+            var Tld = Utilities.GetTLD(Address);
+
+            string Response = string.Empty;
+            using (var Connection = new TcpConnection("whois.iana.org"))
+            {
+                Connection.Connect();
+                Connection.Send(Tld);
+                Response = Connection.Receive();
+            }
+
+            string Pattern = @"refer:\s+(\S+)";
+            Match ServerMatch = Regex.Match(Response, Pattern);
+
+            if (ServerMatch.Success)
+                return ServerMatch.Groups[1].Value;
+            else
+                return string.Empty;
+        }
+
         public static string GetWhoisServer(string Address)
         {
             var Tld = Utilities.GetTLD(Address);
@@ -24,7 +45,6 @@ namespace WhoisNET.Network
                 return ServerMatch.Groups[1].Value;
             else
                 return string.Empty;
-
         }
 
         public static string GetWhois(string Address)
