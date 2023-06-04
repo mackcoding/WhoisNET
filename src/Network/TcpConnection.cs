@@ -6,7 +6,7 @@ namespace WhoisNET.Network
     public class TcpConnection : IDisposable
     {
         private TcpClient Client = new TcpClient();
-        private string _address;
+        private string? _address;
         private int _port;
         private bool disposedValue;
 
@@ -16,10 +16,12 @@ namespace WhoisNET.Network
             _address = ServerAddress ?? string.Empty;
             _port = Port;
 
+            Debug.WriteDebug($"TcpConnection ready to connect - {_address}:{_port}");
+
             if (_address == null)
             {
-                Debug.Error("ServerAddress is null.");
-                throw new Exception("ServerAddress is null.");
+                ThrowException("ServerAddress is null.");
+                return;
             }
         }
 
@@ -27,8 +29,8 @@ namespace WhoisNET.Network
         {
             try
             {
-                Client = new TcpClient(_address, _port);
-                Debug.Write($"Connected to {_address}:{_port} \n IsConnected: {Client.Connected}");
+                Client = new TcpClient(_address ?? string.Empty, _port);
+                Debug.WriteDebug($"Connected to {_address}:{_port}, connection successful: {Client.Connected}");
                 return true;
             }
             catch (Exception ex)
@@ -42,7 +44,7 @@ namespace WhoisNET.Network
         {
             if (Client != null)
             {
-                Debug.Write($"Connection to {_address}:{_port} has been closed.");
+                Debug.WriteDebug($"Connection to {_address}:{_port} has been closed.");
                 Client.Close();
             }
             else
@@ -77,7 +79,7 @@ namespace WhoisNET.Network
         public void Send(string Msg)
         {
             var Data = Encoding.ASCII.GetBytes($"{Msg}\r\n");
-            Debug.Write($"Sending command '{Msg}' to server...");
+            Debug.WriteDebug($"Sending command '{Msg}' to server...");
 
             CheckIfClientIsValid();
 
@@ -97,28 +99,34 @@ namespace WhoisNET.Network
         {
             CheckIfClientIsValid();
 
-            Debug.Write("Receiving data...");
+            Debug.WriteDebug("Receiving data...");
 
             try
             {
                 NetworkStream Stream = Client.GetStream();
-                byte[] Buffer = new byte[Client.ReceiveBufferSize];
-                int BufferSizeRead = Stream.Read(Buffer, 0, Buffer.Length);
-                byte[] Data = new byte[BufferSizeRead];
+                byte[] Buffer = new byte[1024];
+                int BytesRead;
+                StringBuilder Received = new StringBuilder();
 
-                Array.Copy(Buffer, Data, BufferSizeRead);
+                while ((BytesRead = Stream.Read(Buffer, 0, Buffer.Length)) > 0)
+                {
+                    Received.Append(Encoding.ASCII.GetString(Buffer, 0, BytesRead));
+                    Debug.WriteDebug($"Received {BytesRead} bytes...");
 
-                Debug.Write($"Data received ({BufferSizeRead} bytes)");
+                }
 
-                return Encoding.ASCII.GetString(Data);
+                Debug.WriteDebug("Receive data complete!");
+
+                return Received.ToString();
+
             }
             catch (Exception ex)
             {
                 ThrowException(ex.Message);
                 return string.Empty;
             }
-        }
 
+        }
         #endregion
 
         #region Anything else

@@ -9,7 +9,6 @@ namespace WhoisNET
 {
     public static class Utilities
     {
-
         /// <summary>
         /// Extracts the TLD from a URL
         /// </summary>
