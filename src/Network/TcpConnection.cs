@@ -80,7 +80,6 @@ namespace WhoisNET.Network
         {
             var Data = Encoding.ASCII.GetBytes($"{Msg}\r\n");
             Debug.WriteDebug($"Sending command '{Msg}' to server...");
-
             CheckIfClientIsValid();
 
             try
@@ -98,7 +97,6 @@ namespace WhoisNET.Network
         public string Receive()
         {
             CheckIfClientIsValid();
-
             Debug.WriteDebug("Receiving data...");
 
             try
@@ -112,7 +110,6 @@ namespace WhoisNET.Network
                 {
                     Received.Append(Encoding.ASCII.GetString(Buffer, 0, BytesRead));
                     Debug.WriteDebug($"Received {BytesRead} bytes...");
-
                 }
 
                 Debug.WriteDebug("Receive data complete!");
