@@ -57,20 +57,50 @@ namespace WhoisNET
 
             try
             {
-                Uri uri = new Uri(Url);
+                Uri uri = new(Url);
                 string Host = uri.Host;
                 string[] Parts = Host.Split('.');
 
-                if (Parts.Length>= 2)
-                    return $"{Parts[Parts.Length-2]}.{Parts[Parts.Length-1]}";
-                 
+                if (Parts.Length >= 2)
+                    return $"{Parts[^2]}.{Parts[^1]}";
 
-            } catch (UriFormatException)
+
+            }
+            catch (UriFormatException)
             {
                 throw new UriFormatException();
             }
 
             return string.Empty;
+        }
+
+        public static bool IpInRange(IPAddress IP, IPAddress StartRange, IPAddress EndRange)
+        {
+            byte[] ipBytes = IP.GetAddressBytes();
+            byte[] startIpBytes = StartRange.GetAddressBytes();
+            byte[] endIpBytes = EndRange.GetAddressBytes();
+
+            bool isGreaterOrEqualStart = true;
+            bool isLessOrEqualEnd = true;
+
+            // Compare each byte of the IP address
+            for (int i = 0; i < ipBytes.Length; i++)
+            {
+                if (ipBytes[i] < startIpBytes[i])
+                {
+                    isGreaterOrEqualStart = false;
+                    break;
+                }
+
+                if (ipBytes[i] > endIpBytes[i])
+                {
+                    isLessOrEqualEnd = false;
+                    break;
+                }
+            }
+
+            return isGreaterOrEqualStart && isLessOrEqualEnd;
+
         }
     }
 }

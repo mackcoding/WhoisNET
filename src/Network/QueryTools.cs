@@ -41,7 +41,7 @@ namespace WhoisNET.Network
         {
             string Result = string.Empty;
 
-            List<string> ListOfTests = new List<string>
+            List<string> ListOfTests = new()
             {
                 "whois:\\s+(\\S+)",
                 "refer:\\s+(\\S+)",
@@ -60,17 +60,13 @@ namespace WhoisNET.Network
 
         public static string GetQueryCmd(string Server)
         {
-            switch (Server)
+            return Server switch
             {
-                case "whois.internic.net":
-                case "whois.verisign-grs.com":
-                    return $"domain ";
-                case "whois.arin.net": // This fixes the 'Query term are ambiguous' message when querying arin. 
-                    return $"n +";
-                default:
-                    // Remove the "domain" command from other servers
-                    return $"";
-            }
+                "whois.internic.net" or "whois.verisign-grs.com" => $"domain ",
+                // This fixes the 'Query term are ambiguous' message when querying arin. 
+                "whois.arin.net" => $"n +",
+                _ => $"",// Remove the "domain" command from other servers
+            };
         }
 
 
