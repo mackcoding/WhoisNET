@@ -9,6 +9,36 @@ I'm developing this for two reasons:
 
 I am actively working on it. It is not a full time project and is only updated when I have time.
 
+# Commands
+A basic tokenizer returns a list options. This will be expanded in the future.
+
+Usage: whois [OPTION] OBJECT
+
+```
+-h  --host         <HOST>  Specifies which whois server to query.
+-p  --port         <PORT>  Specifies which server port to query.
+-d  --debug                Displays debug output
+-r  --no-recursion         Disables recursion from registry to registrar servers
+    --help                 Displays the command help
+```
+
+# Making available to Windows command/powershell
+
+- Compile the application
+- Update the `{PATH}` to whatever the compiled exe is
+- Open powershell or command and type `whois --help`
+
+```
+New-Item -ItemType SymbolicLink -Path "{PATH}\whois.exe" -Target "{PATH}\WhoisNET.Client.exe"
+[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";{PATH}", [System.EnvironmentVariableTarget]::Machine)
+```
+
+1. Creates a symlink `WhoisNET.Client.exe` > `whois.exe` (this allows you to use `whois` as the command)
+2. Adds the path to the environment variables
+
+# Crossplatform
+
+Should be, haven't tested it yet!
 
 # Contributing
 
