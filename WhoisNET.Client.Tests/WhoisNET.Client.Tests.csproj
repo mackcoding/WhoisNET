@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WhoisNET\WhoisNET.csproj" />
+    <ProjectReference Include="..\src\WhoisNET.Client\WhoisNET.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

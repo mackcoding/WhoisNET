@@ -1,7 +1,4 @@
-﻿using NUnit.Framework;
-using WhoisNET.Client.CmdOptions;
-using System.Collections.Generic;
-using System;
+﻿using WhoisNET.Client.CmdOptions;
 
 namespace WhoisNET.Tests
 {
@@ -46,7 +43,6 @@ namespace WhoisNET.Tests
             });
         }
 
-        // todo: test fails because of the - in no-recursion, need to add detection for that. 
         [Test]
         public void TestFlagOptions()
         {
@@ -66,7 +62,6 @@ namespace WhoisNET.Tests
             });
         }
 
-        // todo: test fails because of the - in no-recursion, need to add detection for that. 
         [Test]
         public void TestMixedOptions()
         {
