@@ -34,8 +34,12 @@ try
         Debug.SetLogLevel = LogLevel.Debug;
     }
 
-    var result = await Whois.QueryAsync(query ?? "", hostname, !noRecursion, queryPort: port ?? 43);
-    Console.WriteLine($"{result}");
+
+    if (!string.IsNullOrEmpty(query))
+    {
+        var result = await Whois.QueryAsync(query ?? "", hostname, !noRecursion, queryPort: port ?? 43);
+        Console.WriteLine($"{result}");
+    }
 }
 catch (Exception err)
 {
