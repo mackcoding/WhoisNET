@@ -8,32 +8,41 @@ namespace WhoisNET.Client.CmdOptions
         readonly static Dictionary<OptionEnum, object> tokens = [];
 
         public static Dictionary<OptionEnum, object> Tokenize(string input)
-                                             {
+        {
             var option = new StringBuilder();
             var value = new StringBuilder();
             bool isValue = false,
                 isOption = false,
                 isFlag = false;
+            char previous = default;
 
             tokens.Clear();
 
             foreach (char c in input)
             {
+                var isDashInToken = !(previous == default(char) || char.IsWhiteSpace(previous) || previous == '-');
+
+
                 switch (c)
                 {
-                    case '-':
-                        if (option.Length > 0 && value.Length > 0)
+                    case '-' when !isDashInToken:
+                        if (option.Length > 0 && char.IsWhiteSpace(previous))
                         {
                             AddToken(option.ToString(), value);
                             option.Clear();
                             value.Clear();
                             isValue = false;
                         }
+
                         isOption = true;
                         break;
-
                     default:
-                        if (char.IsWhiteSpace(c))
+                        if (c == '-' && isDashInToken)
+                        {
+                            option.Append(c);
+                            isOption = true;
+                        }
+                        else if (char.IsWhiteSpace(c))
                         {
                             if (option.Length > 0 && value.Length > 0)
                             {
@@ -68,6 +77,8 @@ namespace WhoisNET.Client.CmdOptions
                         }
                         break;
                 }
+
+                previous = c;
             }
 
             if (option.ToString().Equals("help", StringComparison.Ordinal))
