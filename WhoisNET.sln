@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhoisNET.Client", "src\Whoi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhoisNET.Tests", "src\WhoisNET.Tests\WhoisNET.Tests.csproj", "{E9F41911-71D0-4B8F-AB46-B16A697A216B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhoisNET.Client.Tests", "WhoisNET.Client.Tests\WhoisNET.Client.Tests.csproj", "{3398FB60-E36C-4B5B-8385-ABACDBA4264C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{E9F41911-71D0-4B8F-AB46-B16A697A216B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9F41911-71D0-4B8F-AB46-B16A697A216B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9F41911-71D0-4B8F-AB46-B16A697A216B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3398FB60-E36C-4B5B-8385-ABACDBA4264C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3398FB60-E36C-4B5B-8385-ABACDBA4264C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3398FB60-E36C-4B5B-8385-ABACDBA4264C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3398FB60-E36C-4B5B-8385-ABACDBA4264C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
