@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
 
 namespace WhoisNET.Network
@@ -19,9 +18,9 @@ namespace WhoisNET.Network
                 await _client.ConnectAsync(Hostname, QueryPort);
                 _stream = _client.GetStream();
             }
-            catch (SocketException)
+            catch (SocketException ex)
             {
-               // Debug.WriteException($"{ex.Message}");
+                Debug.ThrowException($"{ex.Message}", exception: ex);
                 throw;
             }
         }
@@ -34,9 +33,7 @@ namespace WhoisNET.Network
             // todo: is this needed? currently fixes dereference warning
             if (_stream is null)
             {
-                // todo: fix so we do not need to make two calls
-                string msg = "The NetworkStream is null.";
-                Debug.WriteException($"{msg}");
+                Debug.ThrowException($"The NetworkStream is null.");
                 return;
             }
 
@@ -49,12 +46,12 @@ namespace WhoisNET.Network
             }
             catch (ObjectDisposedException ex)
             {
-                Debug.WriteException($"Stream is closed, exception: {ex.Message}");
+                Debug.ThrowException($"Stream is closed, exception: {ex.Message}", exception:ex);
                 throw;
             }
             catch (IOException ex)
             {
-                Debug.WriteException($"Error writing to stream, exception: {ex.Message}");
+                Debug.ThrowException($"Error writing to stream, exception: {ex.Message}");
                 throw;
             }
         }
@@ -68,10 +65,8 @@ namespace WhoisNET.Network
             // todo: is this needed? currently fixes dereference warning
             if (_stream is null)
             {
-                // todo: fix so we do not need to make two calls
-                string msg = "The NetworkStream is null.";
-                Debug.WriteException($"{msg}");
-                throw new InvalidOperationException(msg);
+                Debug.ThrowException($"The network stream is null.");
+                return string.Empty;
             }
 
             try
@@ -89,12 +84,12 @@ namespace WhoisNET.Network
             }
             catch (ObjectDisposedException ex)
             {
-                Debug.WriteException($"Stream is closed, exception: {ex.Message}");
+                Debug.ThrowException($"Stream is closed, exception: {ex.Message}",exception:ex);
                 throw;
             }
             catch (IOException ex) when (ex.InnerException is SocketException)
             {
-                Debug.WriteException($"Error reading from stream, exception: {ex.Message}");
+                Debug.ThrowException($"Error reading from stream, exception: {ex.Message}", exception:ex);
                 throw;
             }
         }

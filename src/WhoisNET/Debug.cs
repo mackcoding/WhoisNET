@@ -58,6 +58,21 @@ namespace WhoisNET
         }
 
         /// <summary>
+        /// Throws an exception.
+        /// </summary>
+        /// <param name="msg">Message to write</param>
+        /// <param name="method">(optional) Source method</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static void ThrowException(string msg, [CallerMemberName] string? method = null, Exception? exception = null)
+        {
+            WriteException(msg, method);
+            if (exception is null) 
+                throw new Exception(msg);
+
+            throw exception;
+        }
+
+        /// <summary>
         /// Sets the default logging level. 
         /// </summary>
         public static LogLevel SetLogLevel
@@ -68,7 +83,10 @@ namespace WhoisNET
             }
         }
 
+
     }
+
+
 
     /// <summary>
     /// Defines the log level.

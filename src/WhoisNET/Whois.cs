@@ -12,10 +12,10 @@ namespace WhoisNET
         /// <param name="query">Domain or IP to query</param>
         /// <returns>Parsed output of the whois</returns>
         //public static async Task<string> Lookup(string query)
-       // {
-            // todo: write a parser for whois information returned
-       //     return string.Empty;
-       // }
+        // {
+        // todo: write a parser for whois information returned
+        //     return string.Empty;
+        // }
 
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace WhoisNET
         /// <param name="queryPort">Port to run the query on</param>
         /// <returns>Raw whois query data</returns>
         // todo: do we really need followRefer?
-        public static async Task<string> QueryAsync(string query, string? whoisServer = null,bool followReferral = true, int retries = 0, int queryPort = 43)
+        public static async Task<string> QueryAsync(string query, string? whoisServer = null, bool followReferral = true, int retries = 0, int queryPort = 43)
         {
             string? response;
             var server = string.IsNullOrEmpty(whoisServer) ? await FindQueryServerAsync(query) : whoisServer;
@@ -35,12 +35,8 @@ namespace WhoisNET
             Debug.WriteDebug($"Using query '{query}' with whois server '{server}', following referrals: {followReferral}");
 
             if (retries > 5)
-            {
-                // todo: optimize this so we don't need to call two methods to throw an exception
-                string msg = "Too many referral retry requests.";
-                Debug.WriteException(msg);
-                throw new InvalidOperationException(msg);
-            }
+                Debug.ThrowException("Too many referral retry requests.");
+
 
             try
             {
@@ -71,22 +67,22 @@ namespace WhoisNET
                         retries++;
                         Debug.WriteDebug($"Following referral '{host}:{port}', attempt #{retries}.");
                         return await QueryAsync(
-                            query, 
-                            whoisServer: host, 
-                            followReferral: followReferral, 
-                            retries: retries, 
+                            query,
+                            whoisServer: host,
+                            followReferral: followReferral,
+                            retries: retries,
                             queryPort: port);
                     }
                 }
             }
             catch (SocketException ex)
             {
-                Debug.WriteException($"{ex.Message}");
-                throw ;
+                Debug.ThrowException($"{ ex.Message}");
+                throw;
             }
             catch (Exception ex)
             {
-                Debug.WriteException($"Exception: {ex.Message}");
+                Debug.ThrowException($"Exception: {ex.Message}");
                 throw;
             }
 
@@ -133,7 +129,7 @@ namespace WhoisNET
             }
             catch (Exception ex)
             {
-                Debug.WriteException(ex.Message);
+                Debug.ThrowException(ex.Message, exception:ex);
                 throw;
             }
         }

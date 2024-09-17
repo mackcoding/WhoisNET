@@ -22,8 +22,8 @@ namespace WhoisNET.Tests
         {
             string response = await Whois.QueryAsync(domain);
 
-            Assert.That(response, 
-                Does.Contain(expectedSubstring), 
+            Assert.That(response,
+                Does.Contain(expectedSubstring),
                 $"Response for {domain} does not contain expected substring: {expectedSubstring}");
         }
     }
