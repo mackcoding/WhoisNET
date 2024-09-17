@@ -1,11 +1,32 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using WhoisNET.Enums;
 using WhoisNET.Network;
 
 namespace WhoisNET
 {
     public class Whois
     {
+        private static readonly Dictionary<QueryOptions, object> _options = [];
+
+        /// <summary>
+        /// Builds an internal option dictionary. 
+        /// </summary>
+        /// <param name="option"></param>
+        /// <param name="value"></param>
+        public static void AddQueryOption(QueryOptions option, object value)
+        {
+            _options.TryAdd(option, value);
+        }
+
+        /// <summary>
+        /// Clears the query options.
+        /// </summary>
+        public static void ClearQueryOptions()
+        {
+            _options.Clear();
+        }
+
         /// <summary>
         /// Performs a lookup, returns the parsed result. 
         /// </summary>
@@ -16,6 +37,30 @@ namespace WhoisNET
         // todo: write a parser for whois information returned
         //     return string.Empty;
         // }
+
+        /// <summary>   
+        /// Uses options to customize the query call.
+        /// </summary>
+        /// <param name="options">Dictionary of options.</param>
+        /// <returns>Query results.</returns>
+        public static async Task<string> QueryAsync(Dictionary<QueryOptions, object> options)
+        {
+            string query = options.TryGetValue(QueryOptions.query, out object? qvalue) && qvalue is string qstr ? qstr : string.Empty;
+            string whoisServer = options.TryGetValue(QueryOptions.host, out object? wsvalue) && wsvalue is string wsstr ? wsstr : string.Empty;
+            bool followReferral = !(options.TryGetValue(QueryOptions.no_recursion, out object? frvalue) && frvalue is bool frbool && frbool);
+
+            int queryPort = options.TryGetValue(QueryOptions.port, out object? pvalue) && pvalue is int pint ? pint : 43;
+
+            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out object? dvalue) && dvalue is bool dbool && dbool ? LogLevel.Debug : LogLevel.Off;
+
+            return await QueryAsync(query, whoisServer, followReferral, queryPort: queryPort);
+        }
+
+        /// <summary>
+        /// Executes QueryAsync() when options are set.
+        /// </summary>
+        /// <returns>Query result</returns>
+        public static async Task<string> QueryAsync() => await QueryAsync(_options);
 
 
         /// <summary>
@@ -77,7 +122,7 @@ namespace WhoisNET
             }
             catch (SocketException ex)
             {
-                Debug.ThrowException($"{ ex.Message}");
+                Debug.ThrowException($"{ex.Message}");
                 throw;
             }
             catch (Exception ex)
@@ -129,7 +174,7 @@ namespace WhoisNET
             }
             catch (Exception ex)
             {
-                Debug.ThrowException(ex.Message, exception:ex);
+                Debug.ThrowException(ex.Message, exception: ex);
                 throw;
             }
         }

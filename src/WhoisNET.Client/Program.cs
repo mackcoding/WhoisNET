@@ -1,8 +1,50 @@
 ﻿using WhoisNET;
 using WhoisNET.Client.CmdOptions;
+using WhoisNET.Enums;
 
 
-// todo: make the whois library accept a dictionary of options instead
+/*
+if (args.Length == 0)
+{
+    Options.ShowHelp();
+    return;
+}
+
+var options = Tokenizer.Tokenize(string.Join(' ', args));*/
+var options = Tokenizer.Tokenize("--no-recursion 1.1.1.1");
+
+Dictionary<QueryOptions, object> queryOptions = [];
+
+switch (options)
+{
+    case var o when o.ContainsKey(OptionEnum.query):
+        queryOptions.Add(QueryOptions.query, o[OptionEnum.query]);
+        break;
+    case var o when o.ContainsKey(OptionEnum.host):
+        queryOptions.Add(QueryOptions.host, o[OptionEnum.host]);
+        break;
+    case var o when o.ContainsKey(OptionEnum.port):
+        queryOptions.Add(QueryOptions.port, o[OptionEnum.port]);
+        break;
+    case var o when o.ContainsKey(OptionEnum.debug):
+        queryOptions.Add(QueryOptions.debug, o[OptionEnum.debug]);
+        break;
+    case var o when o.ContainsKey(OptionEnum.verbose):
+        queryOptions.Add(QueryOptions.verbose, o[OptionEnum.verbose]);
+        break;
+    case var o when o.ContainsKey(OptionEnum.no_recursion):
+        queryOptions.Add(QueryOptions.no_recursion, o[OptionEnum.no_recursion]);
+        break;
+    default:
+        Console.WriteLine("error: no query specified.");
+        break;
+}
+
+var result = await Whois.QueryAsync(queryOptions);
+
+Console.WriteLine($"{result}");
+
+/*
 try
 {
     var options = Tokenizer.Tokenize(string.Join(' ', args));
@@ -22,6 +64,8 @@ try
         [OptionEnum.verbose] = _ => Console.WriteLine("Not yet implemented."),
         [OptionEnum.no_recursion] = _ => noRecursion = true
     };
+
+
 
     foreach (var (key, value) in options)
     {
@@ -45,3 +89,4 @@ catch (Exception err)
 {
     Console.WriteLine($"error: {err.Message}");
 }
+*/
