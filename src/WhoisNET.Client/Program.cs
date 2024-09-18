@@ -3,7 +3,7 @@ using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
 using WhoisNET.Parser;
 
-var options = Tokenizer.Tokenize("mackcoding.com");
+var options = Tokenizer.Tokenize("204.2.29.65");
 
 Dictionary<QueryOptions, object> queryOptions = [];
 
