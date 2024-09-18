@@ -1,8 +1,9 @@
 ﻿using WhoisNET;
 using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
+using WhoisNET.Parser;
 
-var options = Tokenizer.Tokenize("1.1.1.1");
+var options = Tokenizer.Tokenize("mackcoding.com");
 
 Dictionary<QueryOptions, object> queryOptions = [];
 
@@ -32,5 +33,7 @@ if (!queryOptions.ContainsKey(QueryOptions.query))
 
 var result = await Whois.QueryAsync(queryOptions);
 
+
+var parsedResult = WhoisParser.Tokenize(result);
 
 Console.WriteLine($"{result}");
