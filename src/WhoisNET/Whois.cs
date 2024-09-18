@@ -8,6 +8,7 @@ namespace WhoisNET
     public class Whois
     {
         private static readonly Dictionary<QueryOptions, object> _options = [];
+        private const string defaultWhoisServer = "whois.iana.org";
 
         /// <summary>
         /// Builds an internal option dictionary. 
@@ -143,7 +144,7 @@ namespace WhoisNET
             if (Utilities.IsIpAddress(query))
             {
                 Debug.WriteDebug($"Query '{query}' is an IP address.");
-                return "whois.iana.org";
+                return defaultWhoisServer;
             }
 
             var tld = await Utilities.GetTLD(query);
@@ -154,19 +155,19 @@ namespace WhoisNET
             if (string.IsNullOrEmpty(tld))
             {
                 Debug.WriteDebug($"The TLD returned empty; using whois.iana.org.");
-                return "whois.iana.org";
+                return defaultWhoisServer;
             }
 
             try
             {
                 var server = await Dns.GetHostEntryAsync($"{tld}.whois-servers.net");
                 Debug.WriteDebug($"Queried '{tld}.whois-servers.net' and received '{server.HostName}'.");
-                return server.HostName ?? "whois.iana.org"; // todo: perhaps move the hostname to a const instead
+                return server.HostName ?? defaultWhoisServer; // todo: perhaps move the hostname to a const instead
             }
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.HostNotFound)
             {
                 Debug.WriteDebug($"Unable to find host '{tld}.whois-servers.net'; using default lookup.");
-                return "whois.iana.org"; // todo: perhaps move the hostname to a const instead 
+                return defaultWhoisServer; // todo: perhaps move the hostname to a const instead 
             }
             catch (Exception ex)
             {
