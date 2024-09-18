@@ -11,36 +11,37 @@ if (args.Length == 0)
 }
 
 var options = Tokenizer.Tokenize(string.Join(' ', args));*/
-var options = Tokenizer.Tokenize("--no-recursion 1.1.1.1");
+var options = Tokenizer.Tokenize("1.1.1.1");
 
 Dictionary<QueryOptions, object> queryOptions = [];
 
-switch (options)
+var optionMapping = new Dictionary<OptionEnum, QueryOptions>
 {
-    case var o when o.ContainsKey(OptionEnum.query):
-        queryOptions.Add(QueryOptions.query, o[OptionEnum.query]);
-        break;
-    case var o when o.ContainsKey(OptionEnum.host):
-        queryOptions.Add(QueryOptions.host, o[OptionEnum.host]);
-        break;
-    case var o when o.ContainsKey(OptionEnum.port):
-        queryOptions.Add(QueryOptions.port, o[OptionEnum.port]);
-        break;
-    case var o when o.ContainsKey(OptionEnum.debug):
-        queryOptions.Add(QueryOptions.debug, o[OptionEnum.debug]);
-        break;
-    case var o when o.ContainsKey(OptionEnum.verbose):
-        queryOptions.Add(QueryOptions.verbose, o[OptionEnum.verbose]);
-        break;
-    case var o when o.ContainsKey(OptionEnum.no_recursion):
-        queryOptions.Add(QueryOptions.no_recursion, o[OptionEnum.no_recursion]);
-        break;
-    default:
-        Console.WriteLine("error: no query specified.");
-        break;
+    { OptionEnum.query, QueryOptions.query },
+    { OptionEnum.host, QueryOptions.host },
+    { OptionEnum.port, QueryOptions.port },
+    { OptionEnum.debug, QueryOptions.debug },
+    { OptionEnum.verbose, QueryOptions.verbose },
+    { OptionEnum.no_recursion, QueryOptions.no_recursion }
+};
+
+
+foreach (var option in options)
+{
+    if (optionMapping.TryGetValue(option.Key, out var queryOption))
+    {
+        queryOptions.Add(queryOption, option.Value);
+    }
+}
+
+// Handle the case where no query is specified
+if (!queryOptions.ContainsKey(QueryOptions.query))
+{
+    Console.WriteLine("error: no query specified.");
 }
 
 var result = await Whois.QueryAsync(queryOptions);
+
 
 Console.WriteLine($"{result}");
 

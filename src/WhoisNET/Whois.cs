@@ -45,16 +45,19 @@ namespace WhoisNET
         /// <returns>Query results.</returns>
         public static async Task<string> QueryAsync(Dictionary<QueryOptions, object> options)
         {
-            string query = options.TryGetValue(QueryOptions.query, out object? qvalue) && qvalue is string qstr ? qstr : string.Empty;
-            string whoisServer = options.TryGetValue(QueryOptions.host, out object? wsvalue) && wsvalue is string wsstr ? wsstr : string.Empty;
-            bool followReferral = !(options.TryGetValue(QueryOptions.no_recursion, out object? frvalue) && frvalue is bool frbool && frbool);
+            string query = options.TryGetValue(QueryOptions.query, out var qvalue) && qvalue is string qstr ? qstr : string.Empty;
+            string whoisServer = options.TryGetValue(QueryOptions.host, out var wsvalue) && wsvalue is string wsstr ? wsstr : string.Empty;
+            int queryPort = options.TryGetValue(QueryOptions.port, out var pvalue) && pvalue is int pint ? pint : 43;
 
-            int queryPort = options.TryGetValue(QueryOptions.port, out object? pvalue) && pvalue is int pint ? pint : 43;
+            bool followReferral = !(options.TryGetValue(QueryOptions.no_recursion, out var frvalue) && frvalue is bool frbool && frbool);
 
-            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out object? dvalue) && dvalue is bool dbool && dbool ? LogLevel.Debug : LogLevel.Off;
+            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out var dvalue) && dvalue is bool dbool && dbool ? LogLevel.Debug : LogLevel.Off;
+
 
             return await QueryAsync(query, whoisServer, followReferral, queryPort: queryPort);
         }
+
+
 
         /// <summary>
         /// Executes QueryAsync() when options are set.
