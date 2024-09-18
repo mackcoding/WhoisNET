@@ -85,7 +85,6 @@ namespace WhoisNET
             if (retries > 5)
                 Debug.ThrowException("Too many referral retry requests.");
 
-
             try
             {
                 await using TcpHandler tcp = new(server, queryPort);
@@ -199,8 +198,8 @@ namespace WhoisNET
         {
             return host switch
             {
-                "arin.net" => "n + ",
-                _ => ""
+                "whois.arin.net" => "n + ",
+                _ => " "
             };
         }
 
