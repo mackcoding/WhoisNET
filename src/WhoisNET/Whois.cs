@@ -28,16 +28,6 @@ namespace WhoisNET
             _options.Clear();
         }
 
-        /// <summary>
-        /// Performs a lookup, returns the parsed result. 
-        /// </summary>
-        /// <param name="query">Domain or IP to query</param>
-        /// <returns>Parsed output of the whois</returns>
-        //public static async Task<string> Lookup(string query)
-        // {
-        // todo: write a parser for whois information returned
-        //     return string.Empty;
-        // }
 
         /// <summary>   
         /// Uses options to customize the query call.
@@ -75,7 +65,6 @@ namespace WhoisNET
         /// <param name="followReferral">Follows the whois server referral</param>
         /// <param name="queryPort">Port to run the query on</param>
         /// <returns>Raw whois query data</returns>
-        // todo: do we really need followRefer?
         public static async Task<string> QueryAsync(string query, string? whoisServer = null, bool followReferral = true, int retries = 0, int queryPort = 43)
         {
             string? response;
