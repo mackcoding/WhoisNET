@@ -103,11 +103,7 @@ namespace WhoisNET
                     var referral = Utilities.GetReferral(response);
                     var (host, port) = referral.Split(':') is var parts && parts.Length > 1 && int.TryParse(parts[1], out var parsedPort) ? (parts[0], parsedPort) : (referral, 43);
 
-                    // todo: for some reason 'rwhois.mediacomcc.com' refers to a dead whois server,
-                    // so if we find this referral we are going to ignore it
-                    // in the future, we should determine why this is happening perhaps implement a 
-                    // blocked referral list
-                    if (host.Equals("rwhois.mediacomcc.com"))
+                    if (CheckIfReferralIsBlacklisted(host))
                         host = string.Empty;
 
                     if (!string.IsNullOrEmpty(host))
@@ -182,7 +178,19 @@ namespace WhoisNET
             }
         }
 
-
+        /// <summary>
+        /// Checks if a referral is blacklisted.
+        /// </summary>
+        /// <param name="host">Referral hostname.</param>
+        /// <returns>True/False - true if the referral is blocked, otherwise false.</returns>
+        public static bool CheckIfReferralIsBlacklisted(string host)
+        {
+            return host switch
+            {
+                "rwhois.mediacomcc.com" => true,
+                _ => false,
+            };
+        }
 
     }
 }
