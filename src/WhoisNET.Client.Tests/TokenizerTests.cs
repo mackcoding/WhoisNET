@@ -1,6 +1,6 @@
 ﻿using WhoisNET.Client.CmdOptions;
 
-namespace WhoisNET.Tests
+namespace WhoisNET.Client.Tests
 {
     [TestFixture]
     public class TokenizerTests

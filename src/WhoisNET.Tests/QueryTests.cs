@@ -1,8 +1,12 @@
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+
 namespace WhoisNET.Tests
 {
     [Parallelizable(ParallelScope.All)]
     public class QueryTests
     {
+
+        #region QueryAsync
         [Test]
         [TestCase("google.com", "Creation Date: 1997-09-15T04:00:00Z")]
         [TestCase("example.com", "Creation Date: 1995-08-14T04:00:00Z")]
@@ -22,9 +26,42 @@ namespace WhoisNET.Tests
         {
             string response = await Whois.QueryAsync(domain);
 
-            Assert.That(response, 
-                Does.Contain(expectedSubstring), 
+            Assert.That(response,
+                Does.Contain(expectedSubstring),
                 $"Response for {domain} does not contain expected substring: {expectedSubstring}");
         }
+        #endregion
+
+        #region FindQueryServerAsync
+        [Test]
+        public async Task FindQueryServerAsync_IPAddress_ReturnsDefaultServer()
+        {
+            string ipAddress = "192.168.1.1";
+            string expectedResult = "whois.iana.org";
+            string result = await Whois.FindQueryServerAsync(ipAddress);
+
+            Assert.That(result, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public async Task FindQueryServerAsync_DomainWithTLD_ReturnsCorrectServer()
+        {
+            string domain = "example.com";
+            string expectedServer = "whois.verisign-grs.com";
+            string result = await Whois.FindQueryServerAsync(domain);
+
+            Assert.That(result, Is.EqualTo(expectedServer));
+        }
+
+        [Test]
+        public async Task FindQueryServerAsync_EmptyTLD_ReturnsDefaultServer()
+        {
+            string domain = "invalid.totallynotatld";
+            string expectedResult = "whois.iana.org";
+            string result = await Whois.FindQueryServerAsync(domain);
+
+            Assert.That(result, Is.EqualTo(expectedResult));
+        }
+        #endregion 
     }
 }

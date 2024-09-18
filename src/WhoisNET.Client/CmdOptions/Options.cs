@@ -56,7 +56,7 @@
             else if (name.Length == 1 && Enum.IsDefined(typeof(OptionEnum), (int)name[0]))
                 return _options[(OptionEnum)(int)name[0]];
 
-             return new OptionAttribute { UnknownOption = true, OptionName = OptionEnum.query };
+            return new OptionAttribute { UnknownOption = true, OptionName = OptionEnum.query };
         }
 
         public static void ShowHelp()

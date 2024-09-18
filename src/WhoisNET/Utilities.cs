@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using WhoisNET.Network;
 
 namespace WhoisNET
 {
@@ -29,57 +26,47 @@ namespace WhoisNET
         /// </summary>
         /// <param name="url">The domain/url to extract the tld from.</param>
         /// <returns>Verified TLD</returns>
-        // todo: move this method to Network, since it makes use of HttpClient
         public static async Task<string> GetTLD(string url)
         {
-            if (!url.StartsWith("http"))
-                url = "http://" + url;
+            if (!Uri.TryCreate(url.StartsWith("http") ? url : "http://" + url, UriKind.Absolute, out var uri))
+                throw new ArgumentException("Invalid URL", nameof(url));
 
-            string domain = new Uri(url).Host;
+            string domain = uri.Host;
 
             try
             {
                 if (suffixes.IsEmpty)
                 {
-                    /* The line above ensures we are not reading the suffix list
-                     * more than once per instance. This block will read the suffix
-                     * file line by line adding it to a hashset called suffixes.
-                     * This is used to find a valid tld from the domain. 
-                     */
-
-                    HttpClient client = new();
-
-                    var stream = await client.GetStreamAsync(_suffixListURL);
-                    using var reader = new StreamReader(stream);
-
-                    string? line;
-
-                    while ((line = await reader.ReadLineAsync()) is not null)
+                    await using var client = new HttpHandler(_suffixListURL);
+                    await foreach (var line in client.GetContentByLineAsync())
                     {
-                        // Remove any lines from the suffix list that start with // or *., and trim
-                        if (line.StartsWith("//") || line.Trim().StartsWith("*.")) continue;
-
-                        suffixes.Add(line.Trim());
+                        if (!line.StartsWith("//") && !line.TrimStart().StartsWith("*."))
+                        {
+                            suffixes.Add(line.Trim());
+                        }
                     }
                 }
 
                 var parts = domain.Split('.');
-
-                for (int i = 0; i < parts.Length; i++)
+                for (int i = 0; i < parts.Length - 1; i++)
                 {
                     var tld = string.Join('.', parts.Skip(i));
                     if (suffixes.Contains(tld))
+                    {
                         return tld;
+                    }
                 }
 
-                return domain[(domain.LastIndexOf('.') + 1)..];
+                return parts[^1];
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"GetTLD: {ex.Message}");
+                Debug.WriteDebug($"GetTLD error: {ex.Message}");
                 throw;
             }
         }
+
+
 
         /// <summary>
         /// Performs a basic regex check for possible referrals
@@ -91,24 +78,6 @@ namespace WhoisNET
         {
             var referral = RegexExpressions.GetReferralServer().Match(data);
 
-            // todo: investigate if this is necessary
-            /* if (!referral.Success)
-             {
-                 referral = RegexExpressions.GetRir().Match(data);
-                 if (referral.Success)
-                 {
-                     return referral.Groups[0].Value switch
-                     {
-                         "APNIC" => "whois.apnic.net",
-                         "RIPE" => "whois.ripe.net",
-                         "LACNIC" => "whois.lacnic.net",
-                         "AFRINIC" => "whois.afrinic.net",
-                         "ARIN" => "whois.arin.net",
-                         _ => "whois.iana.org",
-                     };
-                 }
-             }*/
-
             if (referral.Success)
             {
                 var host = referral.Groups["host"].Value;
@@ -119,6 +88,7 @@ namespace WhoisNET
 
             return string.Empty;
         }
+
 
 
 

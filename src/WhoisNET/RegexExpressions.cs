@@ -6,17 +6,8 @@ namespace WhoisNET
 {
     public partial class RegexExpressions
     {
-        [GeneratedRegex(@"(?:refer|whois|ReferralServer|referral):\s*(?<url>(?:rwhois://)?(?<host>[^:/\s]+)(?::(?<port>\d+))?)", RegexOptions.IgnoreCase, "en-US")]
+        [GeneratedRegex(@"(?:refer|whois|ReferralServer|referral|Referer):\s*(?<url>(?:rwhois://)?(?<host>[^:/\s]+)(?::(?<port>\d+))?)", RegexOptions.IgnoreCase, "en-US")]
         public static partial Regex GetReferralServer();
-
-
-
-
-
-
-        // todo: determine if this is necessary
-        [GeneratedRegex(@"APNIC|RIPE|LACNIC|AFRINIC|ARIN", RegexOptions.IgnoreCase, "en-US")]
-        public static partial Regex GetRir();
 
     }
 }
