@@ -24,6 +24,41 @@
         }
         #endregion
 
+        #region GetReferral
+        [Test]
+        public void GetReferral_SuccessfulMatch_ReturnsFormattedString()
+        {
+            var data = "ReferralServer: rwhois://example.com:80";
+            var expected = "example.com:80";
+            var result = Utilities.GetReferral(data);
+            Assert.That(result, Is.EqualTo(expected));
+        }
 
+        [Test]
+        public void GetReferral_NoMatch_ReturnsEmptyString()
+        {
+            var data = "No referral information";
+            var result = Utilities.GetReferral(data);
+            Assert.That(result, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public void GetReferral_MissingPort_ReturnsDefaultPort()
+        {
+            var data = "ReferralServer: rwhois://example.com";
+            var expected = "example.com:43";
+            var result = Utilities.GetReferral(data);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetReferral_MultipleMatches_ReturnsFirstOne()
+        {
+            var data = "ReferralServer: rwhois://a.com:80\nReferralServer: rwhois://b.com:443";
+            var expected = "a.com:80";
+            var result = Utilities.GetReferral(data);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+        #endregion
     }
 }

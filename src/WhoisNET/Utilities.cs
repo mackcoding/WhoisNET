@@ -78,24 +78,6 @@ namespace WhoisNET
         {
             var referral = RegexExpressions.GetReferralServer().Match(data);
 
-            // todo: investigate if this is necessary
-            /* if (!referral.Success)
-             {
-                 referral = RegexExpressions.GetRir().Match(data);
-                 if (referral.Success)
-                 {
-                     return referral.Groups[0].Value switch
-                     {
-                         "APNIC" => "whois.apnic.net",
-                         "RIPE" => "whois.ripe.net",
-                         "LACNIC" => "whois.lacnic.net",
-                         "AFRINIC" => "whois.afrinic.net",
-                         "ARIN" => "whois.arin.net",
-                         _ => "whois.iana.org",
-                     };
-                 }
-             }*/
-
             if (referral.Success)
             {
                 var host = referral.Groups["host"].Value;
@@ -106,6 +88,7 @@ namespace WhoisNET
 
             return string.Empty;
         }
+
 
 
 
