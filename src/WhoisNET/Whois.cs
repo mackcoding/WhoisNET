@@ -88,12 +88,10 @@ namespace WhoisNET
 
             try
             {
-                using var tcp = new TcpHandler(server, queryPort);
+                await using TcpHandler tcp = new(server, queryPort);
                 var dataToSend = query;
 
-                // todo: likely will need to expand this, and move to its own method
-                if (server.Contains("arin.net"))
-                    dataToSend = $"n + {query}";
+                dataToSend = $"{CustomQueryCommand(server)}{query}";
 
                 await tcp.WriteAsync(dataToSend);
                 response = await tcp.ReadAsync();
@@ -189,6 +187,20 @@ namespace WhoisNET
             {
                 "rwhois.mediacomcc.com" => true,
                 _ => false,
+            };
+        }
+
+        /// <summary>
+        /// Modifies the query command depending on the whois server
+        /// </summary>
+        /// <param name="host">Whois server to check</param>
+        /// <returns>Modified query command</returns>
+        private static string CustomQueryCommand(string host)
+        {
+            return host switch
+            {
+                "arin.net" => "n + ",
+                _ => ""
             };
         }
 

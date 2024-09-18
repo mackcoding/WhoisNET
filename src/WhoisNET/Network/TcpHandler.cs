@@ -3,71 +3,59 @@ using System.Text;
 
 namespace WhoisNET.Network
 {
-    public class TcpHandler(string Hostname = "whois.iana.org", int QueryPort = 43) : IDisposable
+    public class TcpHandler(string hostname = "whois.iana.org", int queryPort = 43) : IAsyncDisposable
     {
         private readonly TcpClient _client = new();
         private NetworkStream? _stream;
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
-            Hostname ??= "whois.iana.org";
-
             try
             {
-                Debug.WriteDebug($"Connecting to {Hostname}:{QueryPort}.");
-                await _client.ConnectAsync(Hostname, QueryPort);
+                Debug.WriteDebug($"Connecting to {hostname}:{queryPort}.");
+                await _client.ConnectAsync(hostname, queryPort, cancellationToken).ConfigureAwait(false);
                 _stream = _client.GetStream();
             }
             catch (SocketException ex)
             {
-                Debug.ThrowException($"{ex.Message}", exception: ex);
+                Debug.ThrowException(ex.Message, exception: ex);
                 throw;
             }
         }
 
-        public async Task WriteAsync(string data)
+        public async Task WriteAsync(string data, CancellationToken cancellationToken = default)
         {
             if (!_client.Connected)
-                await ConnectAsync();
+                await ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-            // todo: is this needed? currently fixes dereference warning
             if (_stream is null)
-            {
-                Debug.ThrowException($"The NetworkStream is null.");
-                return;
-            }
+                throw new InvalidOperationException($"{nameof(_stream)} is null.");
 
-            // todo: needs major improvements and/or overhaul.
             try
             {
                 var buffer = Encoding.ASCII.GetBytes($"{data}\r\n");
-                await _stream.WriteAsync(buffer);
+                await _stream.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
                 Debug.WriteDebug($"Wrote data '{data}\\r\\n'");
             }
             catch (ObjectDisposedException ex)
             {
-                Debug.ThrowException($"Stream is closed, exception: {ex.Message}", exception:ex);
+                Debug.ThrowException($"Stream is closed: {ex.Message}", exception: ex);
                 throw;
             }
             catch (IOException ex)
             {
-                Debug.ThrowException($"Error writing to stream, exception: {ex.Message}");
+                Debug.ThrowException($"Error writing to stream: {ex.Message}", exception: ex);
                 throw;
             }
         }
 
-
-        public async Task<string> ReadAsync()
+        public async Task<string> ReadAsync(CancellationToken cancellationToken = default)
         {
             if (!_client.Connected)
-                await ConnectAsync();
+                await ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-            // todo: is this needed? currently fixes dereference warning
             if (_stream is null)
-            {
-                Debug.ThrowException($"The network stream is null.");
-                return string.Empty;
-            }
+                throw new InvalidOperationException($"{nameof(_stream)} is null.");
 
             try
             {
@@ -75,47 +63,38 @@ namespace WhoisNET.Network
                 var buffer = new byte[1024];
                 int bytesRead;
 
-                while ((bytesRead = await _stream.ReadAsync(buffer)) > 0)
-                    await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                while ((bytesRead = await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
+                    await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken).ConfigureAwait(false);
 
                 memoryStream.Position = 0;
                 using var streamReader = new StreamReader(memoryStream);
-                return await streamReader.ReadToEndAsync();
+                return await streamReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (ObjectDisposedException ex)
             {
-                Debug.ThrowException($"Stream is closed, exception: {ex.Message}",exception:ex);
+                Debug.ThrowException($"Stream is closed: {ex.Message}", exception: ex);
                 throw;
             }
             catch (IOException ex) when (ex.InnerException is SocketException)
             {
-                Debug.ThrowException($"Error reading from stream, exception: {ex.Message}", exception:ex);
+                Debug.ThrowException($"Error reading from stream: {ex.Message}", exception: ex);
                 throw;
             }
         }
 
-
-
-
-        protected virtual void Dispose(bool disposing)
+        public async ValueTask DisposeAsync()
         {
-            if (disposing && _client != null)
-            {
-                _stream?.Dispose();
-                _client.Close();
-                _client.Dispose();
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
+            await DisposeAsyncCore().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
 
-        ~TcpHandler()
+        protected virtual async ValueTask DisposeAsyncCore()
         {
-            Dispose(false);
+            if (_stream != null)
+            {
+                await _stream.DisposeAsync().ConfigureAwait(false);
+            }
+            _client.Dispose();
         }
     }
 }
