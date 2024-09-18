@@ -138,9 +138,6 @@ namespace WhoisNET
         /// <returns>Whois server hostname</returns>
         public static async Task<string> FindQueryServerAsync(string query)
         {
-            // todo: make improvements overall with this method
-            // todo: add caching, perhaps a sqlite db?
-
             if (Utilities.IsIpAddress(query))
             {
                 Debug.WriteDebug($"Query '{query}' is an IP address.");
@@ -148,33 +145,32 @@ namespace WhoisNET
             }
 
             var tld = await Utilities.GetTLD(query);
-
             Debug.WriteDebug($"Found tld '{tld}'.");
 
-            // todo: research to see if iana.org is the best to default to
             if (string.IsNullOrEmpty(tld))
             {
-                Debug.WriteDebug($"The TLD returned empty; using whois.iana.org.");
+                Debug.WriteDebug("The TLD returned empty; using default server.");
                 return defaultWhoisServer;
             }
 
             try
             {
-                var server = await Dns.GetHostEntryAsync($"{tld}.whois-servers.net");
-                Debug.WriteDebug($"Queried '{tld}.whois-servers.net' and received '{server.HostName}'.");
-                return server.HostName ?? defaultWhoisServer; // todo: perhaps move the hostname to a const instead
+                var hostName = await Dns.GetHostEntryAsync($"{tld}.whois-servers.net");
+                Debug.WriteDebug($"Queried '{tld}.whois-servers.net' and received '{hostName.HostName}'.");
+                return hostName.HostName ?? defaultWhoisServer;
             }
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.HostNotFound)
             {
                 Debug.WriteDebug($"Unable to find host '{tld}.whois-servers.net'; using default lookup.");
-                return defaultWhoisServer; // todo: perhaps move the hostname to a const instead 
+                return defaultWhoisServer;
             }
             catch (Exception ex)
             {
-                Debug.ThrowException(ex.Message, exception: ex);
+                Debug.ThrowException($"Error finding query server: {ex.Message}", exception: ex);
                 throw;
             }
         }
+
 
         /// <summary>
         /// Checks if a referral is blacklisted.
