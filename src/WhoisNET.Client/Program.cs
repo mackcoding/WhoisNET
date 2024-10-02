@@ -2,7 +2,8 @@
 using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
 
-var options = Tokenizer.Tokenize("1.1.1.1");
+
+var options = Tokenizer.Tokenize(string.Join(' ', args));
 
 Dictionary<QueryOptions, object> queryOptions = [];
 
@@ -34,3 +35,4 @@ var result = await Whois.QueryAsync(queryOptions);
 
 
 Console.WriteLine($"{result}");
+

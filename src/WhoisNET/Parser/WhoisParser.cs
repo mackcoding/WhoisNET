@@ -1,165 +1,157 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace WhoisNET.Parser
 {
-    public class WhoisParser
+    public partial class WhoisParser
     {
-        private static List<string> _reserved = ["notice", "terms of use"];
+        private readonly Dictionary<string, string> tokens = new(StringComparer.OrdinalIgnoreCase);
 
-        public static Dictionary<string, string> Tokenize(string data)
+        public Dictionary<string, string> Tokenize(string data)
         {
-            var result = new Dictionary<string, string>();
+            tokens.Clear();
             string? line;
 
             using StringReader reader = new(data);
 
-            while ((line = reader.ReadLine()?.Trim()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
-                if (string.IsNullOrEmpty(line))
-                    continue;
+                bool isComment = LineIsComment(line);
+                bool isKey = true,
+                    isValue = false;
 
-                bool isComment = false,
-                    isKey = true,
-                    isValue = false,
-                    isFirstValueChar = false,
-                    keyHasWhitespace = false,
-                    valueHasWhitespace = false;
+                StringBuilder key = new(),
+                    value = new();
 
-                int keyWhiteSpaceCount = 0,
-                    valueWhiteSpaceCount = 0;
-
-                var key = new StringBuilder();
-                var value = new StringBuilder();
-
-                Console.WriteLine($"line: {line}");
-                foreach (char c in line)
+                if (!isComment)
                 {
-                    switch (c)
+                    for (int i = 0; i < line.Length; i++)
                     {
-                        case '#':
-                            isKey = false;
-                            isValue = false;
-                            isComment = true;
-                            break;
-                        case ':' when isKey && !isValue && !keyHasWhitespace:
-                            isKey = false;
-                            isValue = true;
-                            isFirstValueChar = true;
-                            break;
-                        case ' ' when isKey:
-                            keyWhiteSpaceCount++;
+                        char c = line[i];
 
-                            if (keyWhiteSpaceCount > 3)
-                                keyHasWhitespace = true;
-                            break;
-                        case ' ' when isValue:
-                            valueWhiteSpaceCount++;
-
-                            if (valueWhiteSpaceCount > 5)
-                                valueHasWhitespace = true;
-                            break;
-
-                        case '\n':
-                        case '\r':
-                        case '\t':
-                        case ' ':
-                            break;
-                    }
-
-                    if (isKey)
-                        key.Append(c);
-
-                    if (isValue)
-                    {
-                        if (c is ':' && isFirstValueChar)
+                        switch (c)
                         {
-                            isFirstValueChar = false;
-                            continue;
+                            case ':':
+                                isKey = false;
+                                isValue = true;
+                                break;
                         }
 
-                        value.Append(c);
+                        if (isKey && c != ':')
+                            key.Append(c);
+                        else if (isValue && c!= ':')
+                            value.Append(c);
                     }
 
-                    if (isComment)
-                        break;
+                    AddToken(key.ToString(), value.ToString(), tokens);
+                } else
+                {
+                    AddToken("comment", line, tokens);
                 }
-
-
-                if (isKey && !isValue || keyHasWhitespace)
-                    AddLine("info", key.ToString().Trim(), ref result);
-                else if (_reserved.Contains(key.ToString().ToLower()))
-                    AddLine("info", $"{key}: {value}\n", ref result);
-                else if (valueHasWhitespace)
-                    AddLine("info", $"{key} {value}\n", ref result);
-
-                else if (isValue)
-                    AddLine(key.ToString().Trim(), value.ToString().Trim(), ref result);
-                else if (isComment)
-                    AddLine("comment", line, ref result);
-
-
-                //     AddLine(key.ToString().Trim(), value.ToString().Trim(), ref result);
-                // key.Clear();
-                // value.Clear();
             }
-
-            return result;
+            return tokens;
         }
 
-        private static void AddLine(string key, string value, ref Dictionary<string, string> lines)
+        private static void AddToken(string key, string value, Dictionary<string, string> lines)
         {
+            key = key.Trim();
+            value = value.Trim();
+
             if (lines.TryAdd(key, value) == false)
                 lines[key] = $"{lines[key]}{Environment.NewLine}{value}";
         }
 
-        // todo: going to rewrite to be similar to the Client's tokenizer. 
-        public static Dictionary<string, string> Tokenizer(string whoisData)
+        private static bool LineIsComment(string line)
         {
-            var result = new Dictionary<string, string>();
-            using (StringReader reader = new(whoisData))
-            {
-                string? line;
-                string? currentKey = string.Empty;
-                StringBuilder currentValue = new();
+            if (string.IsNullOrEmpty(line) ||
+                    CharGroupMatch(line, ['#', '%', '>', '\t']) ||
+                    CharGroupMatch(line, ['<'], false))
+                return true;
 
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith('%') || line.StartsWith('#'))
-                        continue;
+            if (HasColonWithMaxSpaces(line))
+                return true;
 
+            if (!HasColon(line))
+                return true;
 
-                    int separatorIndex = line.IndexOf(':');
-
-                    if (separatorIndex > 0)
-                    {
-                        if (currentKey != null)
-                        {
-                            result[currentKey] = currentValue.ToString().Trim();
-                            currentValue.Clear();
-                        }
-
-                        currentKey = line[..separatorIndex].Trim();
-                        string valuePart = line[(separatorIndex + 1)..].Trim();
-
-                        currentValue.Append(valuePart);
-                    }
-                    else if (currentKey != null)
-                    {
-                        currentValue.AppendLine();
-                        currentValue.Append(line.Trim());
-                    }
-                }
-
-                if (currentKey != null)
-                {
-                    result[currentKey] = currentValue.ToString().Trim();
-                }
-            }
-            return result;
+            return false;
         }
+
+        private static bool HasColonWithMaxSpaces(string line)
+        {
+            var cleanLine = RemoveHttp(line);
+            int colonIndex = cleanLine.IndexOf(':');
+
+            if (colonIndex == -1)
+                return false;
+
+            int spaceCount = 0;
+            for (int i = colonIndex + 1; i < cleanLine.Length; i++)
+            {
+                var test = PeekChar(line, i);
+
+                if (cleanLine[i] == ' ' && PeekChar(line, i) != ' ')
+                    spaceCount++;
+
+                if (spaceCount > 6)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static char PeekChar(string line, int index)
+        {
+            return index < line.Length - 1 ? line[index + 1] : '\0';
+        }
+
+        private static bool CharGroupMatch(string line, char[] target, bool? firstChar = true)
+        {
+            return line.Length > 0 && Array.Exists(target, c => c == line[0]);
+        }
+
+        private static bool HasColon(string line)
+        {
+            var cleanLine = RemoveHttp(line);
+            return HasChar(cleanLine, ':');
+        }
+
+
+        private static bool HasChar(string line, char target)
+        {
+            foreach (char c in line)
+            {
+                if (c == target)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Searches the tokenized data for a key, uses 'Contains' with 'StringComparison.OrdinalIgnoreCase'.
+        /// </summary>
+        /// <param name="search">The search term</param>
+        /// <returns>Dictionary of matched results</returns>
+        public Dictionary<string, string> FindValue(string search)
+        {
+            Dictionary<string, string> results = [];
+
+            foreach (var item in tokens)
+            {
+                if (item.Key.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    results.TryAdd(item.Key, item.Value);
+            }
+
+            return results;
+        }
+
+        private static string RemoveHttp(string line)
+        {
+            return RemoveHttpsRegex().Replace(line, "").Trim();
+        }
+
+        // todo: very simple regex, not sure if we should eliminate or not.
+        [GeneratedRegex("https?://")]
+        private static partial Regex RemoveHttpsRegex();
     }
 }
