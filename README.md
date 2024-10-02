@@ -29,12 +29,10 @@ Usage: whois [OPTION] OBJECT
 - Open powershell or command and type `whois --help`
 
 ```
-New-Item -ItemType SymbolicLink -Path "{PATH}\whois.exe" -Target "{PATH}\WhoisNET.Client.exe"
 [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";{PATH}", [System.EnvironmentVariableTarget]::Machine)
 ```
 
-1. Creates a symlink `WhoisNET.Client.exe` > `whois.exe` (this allows you to use `whois` as the command)
-2. Adds the path to the environment variables
+Adds the path to the environment variables.
 
 # Crossplatform
 

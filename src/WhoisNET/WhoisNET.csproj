@@ -4,6 +4,26 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>WhoisNET Library</Title>
+    <Company>Thomas Mack</Company>
+    <Description>Lightweight cross-platform whois library for .NET.</Description>
+    <Copyright>©2024 Thomas Mack</Copyright>
+    <PackageProjectUrl>https://github.com/mackcoding/WhoisNET/</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/mackcoding/WhoisNET/</RepositoryUrl>
+    <PackageTags>whois whoisnet whois-library</PackageTags>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,5 +31,22 @@
     <EmbeddedResource Remove="Models\**" />
     <None Remove="Models\**" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Parser\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\license.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
 
 </Project>
