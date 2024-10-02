@@ -35,9 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
-    <Folder Include="Parser\" />
-=======
     <None Include="..\..\license.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -46,7 +43,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
->>>>>>> 2fb2671 (chore: update project meta information)
   </ItemGroup>
 
 </Project>

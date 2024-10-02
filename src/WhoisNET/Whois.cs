@@ -170,7 +170,8 @@ namespace WhoisNET
         {
             return host switch
             {
-                "rwhois.mediacomcc.com" => true,
+                "rwhois.mediacomcc.com" => true, // Mediacom Communications: Server does not work.
+                "rwhois.gin.ntt.net" => true, // NTT Communications: Not necessary to query.
                 _ => false,
             };
         }
