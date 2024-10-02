@@ -1,9 +1,9 @@
 ﻿using WhoisNET;
 using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
-using WhoisNET.Parser;
 
-var options = Tokenizer.Tokenize("204.2.29.65");
+
+var options = Tokenizer.Tokenize(string.Join(' ', args));
 
 Dictionary<QueryOptions, object> queryOptions = [];
 
@@ -34,6 +34,5 @@ if (!queryOptions.ContainsKey(QueryOptions.query))
 var result = await Whois.QueryAsync(queryOptions);
 
 
-var parsedResult = WhoisParser.Tokenize(result);
-
 Console.WriteLine($"{result}");
+
