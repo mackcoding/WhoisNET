@@ -4,6 +4,28 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>WhoisNET Library</Title>
+    <Company>Thomas Mack</Company>
+    <Description>Whois library for .NET</Description>
+    <Copyright>©2024 Thomas Mack</Copyright>
+    <PackageProjectUrl>https://github.com/mackcoding/WhoisNET</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/mackcoding/WhoisNET</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>whois</PackageTags>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
+    <ErrorReport>none</ErrorReport>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +35,18 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <Folder Include="Parser\" />
+=======
+    <None Include="..\..\license.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+>>>>>>> 2fb2671 (chore: update project meta information)
   </ItemGroup>
 
 </Project>
