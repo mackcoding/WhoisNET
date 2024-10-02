@@ -25,16 +25,14 @@ Usage: whois [OPTION] OBJECT
 # Making available to Windows command/powershell
 
 - Compile the application
-- Update the `{PATH}` to whatever the compiled exe is
+- Update the `{PATH}` to where ever the compiled exe is
 - Open powershell or command and type `whois --help`
 
 ```
-New-Item -ItemType SymbolicLink -Path "{PATH}\whois.exe" -Target "{PATH}\WhoisNET.Client.exe"
 [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";{PATH}", [System.EnvironmentVariableTarget]::Machine)
 ```
 
-1. Creates a symlink `WhoisNET.Client.exe` > `whois.exe` (this allows you to use `whois` as the command)
-2. Adds the path to the environment variables
+This adds the path to the environment variables.
 
 # Crossplatform
 
