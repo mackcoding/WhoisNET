@@ -5,7 +5,31 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishAot>True</PublishAot>
+    <PublishTrimmed>True</PublishTrimmed>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>Whois</Title>
+    <Authors>whois</Authors>
+    <Company>Thomas Mack</Company>
+    <Description>Lightweight whois command line client for Windows, Linux, and macOS. </Description>
+    <Copyright>©2024 Thomas Mack</Copyright>
+    <PackageProjectUrl>https://github.com/mackcoding/WhoisNET/</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/mackcoding/WhoisNET/</RepositoryUrl>
+    <PackageTags>whois</PackageTags>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\license.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WhoisNET\WhoisNET.csproj" />
