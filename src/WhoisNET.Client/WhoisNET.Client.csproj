@@ -18,6 +18,7 @@
     <RepositoryUrl>https://github.com/mackcoding/WhoisNET/</RepositoryUrl>
     <PackageTags>whois</PackageTags>
     <PackageLicenseFile>license.md</PackageLicenseFile>
+    <AssemblyName>whois</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
