@@ -17,6 +17,7 @@ namespace WhoisNET
         /// </summary>
         /// <param name="msg">Message to write</param>
         /// <param name="method">(optional) Source method</param>
+        /// <param name="color">(optional) Color of console text</param>
         public static void Write(string msg, [CallerMemberName] string? method = null, ConsoleColor? color = null)
         {
             if (_logLevel == LogLevel.Off)
@@ -45,6 +46,20 @@ namespace WhoisNET
         }
 
         /// <summary>
+        /// Writes debug message to the console with specified message.
+        /// </summary>
+        /// <param name="msg">Message to write</param>
+        /// <param name="method">(optional) Source method</param>
+        public static void WriteVerbose(string msg, [CallerMemberName] string? method = null)
+        {
+            if (_logLevel != LogLevel.Verbose)
+                return;
+
+            Write(msg, method, ConsoleColor.Magenta);
+        }
+
+
+        /// <summary>
         /// Writes exception to the console with specified message.
         /// </summary>
         /// <param name="msg">Message to write</param>
@@ -62,7 +77,7 @@ namespace WhoisNET
         /// </summary>
         /// <param name="msg">Message to write</param>
         /// <param name="method">(optional) Source method</param>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <param name="exception">(optional) The thrown exception</param>
         public static void ThrowException(string msg, [CallerMemberName] string? method = null, Exception? exception = null)
         {
             WriteException(msg, method);
@@ -98,13 +113,18 @@ namespace WhoisNET
         /// </summary>
         Off = 0,
         /// <summary>
-        /// Only log exceptions.
+        /// Only log exceptions
         /// </summary>
         Exception = 1,
         /// <summary>
-        /// Log debug messages.
+        /// Log debug messages
         /// </summary>
-        Debug = 2
+        Debug = 2,
+        /// <summary>
+        /// Log verbose messages
+        /// </summary>
+        Verbose = 3
+          
 
     }
 }

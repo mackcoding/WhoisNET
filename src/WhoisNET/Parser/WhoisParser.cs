@@ -3,10 +3,18 @@ using System.Text.RegularExpressions;
 
 namespace WhoisNET.Parser
 {
+    /// <summary>
+    /// Parser that tokenizes the whois data.
+    /// </summary>
     public partial class WhoisParser
     {
         private readonly Dictionary<string, string> tokens = new(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Tokenizes the whois data into a token dictionary.
+        /// </summary>
+        /// <param name="data">Whois text to tokenize</param>
+        /// <returns>Dictionary with data tokenized into key:value.</returns>
         public Dictionary<string, string> Tokenize(string data)
         {
             tokens.Clear();
@@ -52,6 +60,12 @@ namespace WhoisNET.Parser
             return tokens;
         }
 
+        /// <summary>
+        /// Adds a new token to the internal Dictionary
+        /// </summary>
+        /// <param name="key">Key - used to identify item</param>
+        /// <param name="value">Value of the key</param>
+        /// <param name="lines">Reference to the token dictionary</param>
         private static void AddToken(string key, string value, Dictionary<string, string> lines)
         {
             key = key.Trim();
@@ -61,6 +75,11 @@ namespace WhoisNET.Parser
                 lines[key] = $"{lines[key]}{Environment.NewLine}{value}";
         }
 
+        /// <summary>
+        /// Makes an educated determination on if the line is a comment
+        /// </summary>
+        /// <param name="line">String of the text to check</param>
+        /// <returns>true = line is a comment, otherwise false</returns>
         private static bool LineIsComment(string line)
         {
             if (string.IsNullOrEmpty(line) ||
@@ -77,6 +96,11 @@ namespace WhoisNET.Parser
             return false;
         }
 
+        /// <summary>
+        /// Searches a line for a colon
+        /// </summary>
+        /// <param name="line">String of the text to check</param>
+        /// <returns>true = found a colon, otherwise false</returns>
         private static bool HasColonWithMaxSpaces(string line)
         {
             var cleanLine = RemoveHttp(line);
@@ -88,7 +112,7 @@ namespace WhoisNET.Parser
             int spaceCount = 0;
             for (int i = colonIndex + 1; i < cleanLine.Length; i++)
             {
-                var test = PeekChar(line, i);
+                //var test = PeekChar(line, i);
 
                 if (cleanLine[i] == ' ' && PeekChar(line, i) != ' ')
                     spaceCount++;
@@ -100,16 +124,34 @@ namespace WhoisNET.Parser
             return false;
         }
 
+        /// <summary>
+        /// Returns the next char. 
+        /// </summary>
+        /// <param name="line">String of the text to check</param>
+        /// <param name="index">Index of the peek char</param>
+        /// <returns>Next char based off the index</returns>
         private static char PeekChar(string line, int index)
         {
             return index < line.Length - 1 ? line[index + 1] : '\0';
         }
 
+        /// <summary>
+        /// Runs a char match using a group of chars
+        /// </summary>
+        /// <param name="line">String of the text to check</param>
+        /// <param name="target">Array of targets to find</param>
+        /// <param name="firstChar">(not implemented) true = match first char only, otherwise match entire line</param>
+        /// <returns>true if a match is found, otherwise false</returns>
         private static bool CharGroupMatch(string line, char[] target, bool? firstChar = true)
         {
             return line.Length > 0 && Array.Exists(target, c => c == line[0]);
         }
 
+        /// <summary>
+        /// Checks if a line has a colon
+        /// </summary>
+        /// <param name="line">String of the text to check</param>
+        /// <returns>true = colon found, otherwise false</returns>
         private static bool HasColon(string line)
         {
             var cleanLine = RemoveHttp(line);
@@ -117,6 +159,12 @@ namespace WhoisNET.Parser
         }
 
 
+        /// <summary>
+        /// Checks if the line has specified char.
+        /// </summary>
+        /// <param name="line">String of the text to check</param>
+        /// <param name="target">Target letter to find</param>
+        /// <returns>true = found match, otherwise false.</returns>
         private static bool HasChar(string line, char target)
         {
             foreach (char c in line)
