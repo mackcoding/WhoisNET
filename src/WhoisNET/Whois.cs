@@ -5,6 +5,9 @@ using WhoisNET.Network;
 
 namespace WhoisNET
 {
+    /// <summary>
+    /// Handles whois querying.
+    /// </summary>
     public class Whois
     {
         private static readonly Dictionary<QueryOptions, object> _options = [];
@@ -39,10 +42,13 @@ namespace WhoisNET
             string query = options.TryGetValue(QueryOptions.query, out var qvalue) && qvalue is string qstr ? qstr : string.Empty;
             string whoisServer = options.TryGetValue(QueryOptions.host, out var wsvalue) && wsvalue is string wsstr ? wsstr : string.Empty;
             int queryPort = options.TryGetValue(QueryOptions.port, out var pvalue) && pvalue is int pint ? pint : 43;
-
             bool followReferral = !(options.TryGetValue(QueryOptions.no_recursion, out var frvalue) && frvalue is bool frbool && frbool);
 
-            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out var dvalue) && dvalue is bool dbool && dbool ? LogLevel.Debug : LogLevel.Off;
+            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out var dvalue) && dvalue is bool dbool && dbool
+                ? LogLevel.Debug
+                : (options.TryGetValue(QueryOptions.verbose, out var vvalue) && vvalue is bool vbool && vbool
+                    ? LogLevel.Verbose
+                    : LogLevel.Off);
 
 
             return await QueryAsync(query, whoisServer, followReferral, queryPort: queryPort);
@@ -63,6 +69,7 @@ namespace WhoisNET
         /// <param name="query">IP or domain to query</param>
         /// <param name="whoisServer">Overrides the whois server to use</param>
         /// <param name="followReferral">Follows the whois server referral</param>
+        /// <param name="retries">Used internally; the number of referral followed (capped at 5)</param>
         /// <param name="queryPort">Port to run the query on</param>
         /// <returns>Raw whois query data</returns>
         public static async Task<string> QueryAsync(string query, string? whoisServer = null, bool followReferral = true, int retries = 0, int queryPort = 43)
@@ -85,13 +92,20 @@ namespace WhoisNET
                 await tcp.WriteAsync(dataToSend);
                 response = await tcp.ReadAsync();
 
+                Debug.WriteVerbose($"received response: \n----\n{response}\n----");
+
                 if (followReferral)
                 {
                     var referral = Utilities.GetReferral(response);
                     var (host, port) = referral.Split(':') is var parts && parts.Length > 1 && int.TryParse(parts[1], out var parsedPort) ? (parts[0], parsedPort) : (referral, 43);
 
+                    Debug.WriteVerbose($"got referral: {referral}, got host and port: {host}:{port}");
+
                     if (CheckIfReferralIsBlacklisted(host))
+                    {
+                        Debug.WriteDebug($"Host is found on blacklist: {host}");
                         host = string.Empty;
+                    }
 
                     if (!string.IsNullOrEmpty(host))
                     {
@@ -134,7 +148,7 @@ namespace WhoisNET
             }
 
             var tld = await Utilities.GetTLD(query);
-            Debug.WriteDebug($"Found tld '{tld}'.");
+            Debug.WriteVerbose($"Found tld '{tld}'.");
 
             if (string.IsNullOrEmpty(tld))
             {
@@ -168,6 +182,8 @@ namespace WhoisNET
         /// <returns>True/False - true if the referral is blocked, otherwise false.</returns>
         public static bool CheckIfReferralIsBlacklisted(string host)
         {
+            Debug.WriteVerbose($"host: {host}");
+
             return host switch
             {
                 "rwhois.mediacomcc.com" => true, // Mediacom Communications: Server does not work.
@@ -183,6 +199,7 @@ namespace WhoisNET
         /// <returns>Modified query command</returns>
         private static string CustomQueryCommand(string host)
         {
+            Debug.WriteVerbose($"host: {host}");
             return host switch
             {
                 "whois.arin.net" => "n + ",
