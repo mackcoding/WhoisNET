@@ -3,11 +3,12 @@ using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
 
 
-//var options = Tokenizer.Tokenize(string.Join(' ', args));
+
 
 try
 {
-    var options = Tokenizer.Tokenize("--verbose mackcoding.com");
+    //var options = Tokenizer.Tokenize("--verbose mackcoding.com");
+    var options = Tokenizer.Tokenize(string.Join(' ', args));
 
     Dictionary<QueryOptions, object> queryOptions = [];
 
@@ -39,7 +40,8 @@ try
 
 
     Console.WriteLine($"{result}");
-} catch (Exception err)
+}
+catch (Exception err)
 {
     Console.WriteLine($"{err.Message}");
 }
