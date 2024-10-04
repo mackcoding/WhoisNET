@@ -12,7 +12,6 @@ namespace WhoisNET
     {
         const string _suffixListURL = "https://publicsuffix.org/list/public_suffix_list.dat";
         static readonly ConcurrentBag<string> suffixes = [];
-        private static readonly string[] separator = ["://"];
 
         /// <summary>
         /// A basic check to ensure the query being passed is IPv4 or IPv6. 
@@ -81,9 +80,8 @@ namespace WhoisNET
         /// Performs a basic regex check for possible referrals
         /// </summary>
         /// <param name="data">Response data to check</param>
-        /// <param name="cleanResponse">Removes whois:// from the response</param>
         /// <returns>Referral url</returns>
-        public static string GetReferral(string data, bool cleanResponse = true)
+        public static string GetReferral(string data)
         {
             var referral = RegexExpressions.GetReferralServer().Match(data);
 
