@@ -47,11 +47,8 @@ namespace WhoisNET
                     await using var client = new HttpHandler(_suffixListURL);
                     await foreach (var line in client.GetContentByLineAsync())
                     {
-                        if (!line.StartsWith("//") && !line.TrimStart().StartsWith("*."))
-                        {
-                            Debug.WriteVerbose($"Add suffix: {line.Trim()}");
+                        if (!line.StartsWith("//") && !line.TrimStart().StartsWith("*.") && !string.IsNullOrEmpty(line))
                             suffixes.Add(line.Trim());
-                        }
                     }
                 }
 

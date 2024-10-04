@@ -3,11 +3,15 @@ using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
 
 
-var options = Tokenizer.Tokenize(string.Join(' ', args));
+//var options = Tokenizer.Tokenize(string.Join(' ', args));
 
-Dictionary<QueryOptions, object> queryOptions = [];
+try
+{
+    var options = Tokenizer.Tokenize("--verbose mackcoding.com");
 
-var optionMapping = new Dictionary<OptionEnum, QueryOptions>
+    Dictionary<QueryOptions, object> queryOptions = [];
+
+    var optionMapping = new Dictionary<OptionEnum, QueryOptions>
 {
     { OptionEnum.query, QueryOptions.query },
     { OptionEnum.host, QueryOptions.host },
@@ -18,21 +22,24 @@ var optionMapping = new Dictionary<OptionEnum, QueryOptions>
 };
 
 
-foreach (var option in options)
-{
-    if (optionMapping.TryGetValue(option.Key, out var queryOption))
+    foreach (var option in options)
     {
-        queryOptions.Add(queryOption, option.Value);
+        if (optionMapping.TryGetValue(option.Key, out var queryOption))
+        {
+            queryOptions.Add(queryOption, option.Value);
+        }
     }
-}
 
-if (!queryOptions.ContainsKey(QueryOptions.query))
+    if (!queryOptions.ContainsKey(QueryOptions.query))
+    {
+        Console.WriteLine("error: no query specified.");
+    }
+
+    var result = await Whois.QueryAsync(queryOptions);
+
+
+    Console.WriteLine($"{result}");
+} catch (Exception err)
 {
-    Console.WriteLine("error: no query specified.");
+    Console.WriteLine($"{err.Message}");
 }
-
-var result = await Whois.QueryAsync(queryOptions);
-
-
-Console.WriteLine($"{result}");
-

@@ -44,7 +44,12 @@ namespace WhoisNET
             int queryPort = options.TryGetValue(QueryOptions.port, out var pvalue) && pvalue is int pint ? pint : 43;
             bool followReferral = !(options.TryGetValue(QueryOptions.no_recursion, out var frvalue) && frvalue is bool frbool && frbool);
 
-            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out var dvalue) && dvalue is bool dbool && dbool ? LogLevel.Debug : LogLevel.Off;
+            Debug.SetLogLevel = options.TryGetValue(QueryOptions.debug, out var dvalue) && dvalue is bool dbool && dbool
+                ? LogLevel.Debug
+                : (options.TryGetValue(QueryOptions.verbose, out var vvalue) && vvalue is bool vbool && vbool
+                    ? LogLevel.Verbose
+                    : LogLevel.Off);
+
 
             return await QueryAsync(query, whoisServer, followReferral, queryPort: queryPort);
         }

@@ -27,6 +27,8 @@ namespace WhoisNET
 
             if (color is not null)
                 Console.ForegroundColor = color.GetValueOrDefault();
+            else 
+                Console.ForegroundColor = ConsoleColor.White;
 
             Console.WriteLine($"({DateTime.Now}) [{method}]: {msg}");
             Console.ResetColor();

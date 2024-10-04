@@ -4,6 +4,9 @@
 
 namespace WhoisNET
 {
+    /// <summary>
+    /// Manages generated regex expressions
+    /// </summary>
     public partial class RegexExpressions
     {
         [GeneratedRegex(@"(?:refer|whois|ReferralServer|referral|Referer):\s*(?<url>(?:rwhois://)?(?<host>[^:/\s]+)(?::(?<port>\d+))?)", RegexOptions.IgnoreCase, "en-US")]

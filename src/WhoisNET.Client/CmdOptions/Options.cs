@@ -1,5 +1,8 @@
 ﻿namespace WhoisNET.Client.CmdOptions
 {
+    /// <summary>
+    /// Manages the command options.
+    /// </summary>
     public static class Options
     {
         private static readonly Dictionary<OptionEnum, IOptionAttribute> _options = new()
@@ -38,6 +41,14 @@
                 ShortName = "r",
                 OptionName = OptionEnum.no_recursion
             },
+            [OptionEnum.verbose] = new OptionAttribute
+            {
+                Name = "verbose",
+                Description = "Displays verbose output",
+                IsFlag = true,
+                ShortName = "v",
+                OptionName = OptionEnum.verbose
+            },
             [OptionEnum.help] = new OptionAttribute
             {
                 Name = "help",
@@ -47,6 +58,11 @@
             }
         };
 
+        /// <summary>
+        /// Returns the option attribute.
+        /// </summary>
+        /// <param name="name">Option name to retrieve</param>
+        /// <returns>Option Attribute</returns>
         public static IOptionAttribute? GetOption(string name)
         {
             name = name.Replace("-", "_");
@@ -59,6 +75,9 @@
             return new OptionAttribute { UnknownOption = true, OptionName = OptionEnum.query };
         }
 
+        /// <summary>
+        /// Displays the available options.
+        /// </summary>
         public static void ShowHelp()
         {
             Console.WriteLine("Usage: whois [OPTION] OBJECT\n");
