@@ -4,8 +4,8 @@ The primary goal of this project is to build a library that enables C# developer
 
 This project consists of two main components:
 
-- *Library*: The core of the project, which will eventually be released on NuGet. It is designed to be lightweight and fast, with minimal dependencies on external libraries.
-- *Client*: Utilizes the library to bring the whois command to Windows, allowing users to execute the command from PowerShell or any command prompt. The project supports Windows and Linux, and likely macOS (though untested, as I do not use macOS). In theory, this library will run on any platform .NET 8.0 is supported on. 
+- **Library**: The core of the project, which will eventually be released on NuGet. It is designed to be lightweight and fast, with minimal dependencies on external libraries.
+- **Client**: Utilizes the library to bring the whois command to Windows, allowing users to execute the command from PowerShell or any command prompt. The project supports Windows and Linux, and likely macOS (though untested, as I do not use macOS). In theory, this library will run on any platform .NET 8.0 is supported on. 
 
 This project is built from the ground up to ensure efficiency and cross-platform compatibility.
 
