@@ -1,13 +1,13 @@
-﻿using WhoisNET;
+﻿using System.Diagnostics;
+using WhoisNET;
 using WhoisNET.Client.CmdOptions;
 using WhoisNET.Enums;
-
-
+using WhoisNET.Parser;
 
 
 try
 {
-    //var options = Tokenizer.Tokenize("--verbose mackcoding.com");
+    //var options = Tokenizer.Tokenize("--verbose 128.14.219.125");
     var options = Tokenizer.Tokenize(string.Join(' ', args));
 
     Dictionary<QueryOptions, object> queryOptions = [];
