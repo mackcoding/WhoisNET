@@ -1,13 +1,18 @@
 # Project Goals
 
-I'm developing this for two reasons:
+The primary goal of this project is to build a library that enables C# developers to query IP addresses and domains. Although still under heavy development, it aims to fully support querying against both RDAP and WHOIS. Currently, the data is converted into a Dictionary<key, value> format for use, such as retrieving abuse information. In the future, there will be an option to output data in JSON format.
 
-1. I want to bring the 'whois' command to Windows.
-2. I analyze spam using another application (this will also be open sourced) and automate reporting. I need a proper whois library for this.
+This project consists of two main components:
+
+    Library: The core of the project, which will eventually be released on NuGet. It is designed to be lightweight and fast, with minimal dependencies on external libraries.
+
+    Client: Utilizes the library to bring the whois command to Windows, allowing users to execute the command from PowerShell or any command prompt. The project supports Windows and Linux, and likely macOS (though untested, as I do not use macOS). In theory, this library will run on any platform .NET 8.0 is supported on. 
+
+This project is built from the ground up to ensure efficiency and cross-platform compatibility.
 
 # Status
 
-I am actively working on it. It is not a full time project and is only updated when I have time.
+Active development!
 
 # Commands
 A basic tokenizer returns a list options. This will be expanded in the future.
@@ -18,6 +23,7 @@ Usage: whois [OPTION] OBJECT
 -h  --host         <HOST>  Specifies which whois server to query.
 -p  --port         <PORT>  Specifies which server port to query.
 -d  --debug                Displays debug output
+-d  --verbose              Displays verbose output
 -r  --no-recursion         Disables recursion from registry to registrar servers
     --help                 Displays the command help
 ```
@@ -36,7 +42,7 @@ Adds the path to the environment variables.
 
 # Crossplatform
 
-Should be, haven't tested it yet!
+Currently verified to work on Windows and Linux.
 
 # Contributing
 
