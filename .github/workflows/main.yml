@@ -31,7 +31,7 @@ jobs:
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WhoisNET-${{ github.run_id }}
+        name: whois-$(date +%s)
         path: output/WhoisNET.zip
 
   build-whoisnet-client:
@@ -55,7 +55,7 @@ jobs:
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WhoisNET.Client-${{ github.run_id }}
+        name: whois-client-$(date +%s)
         path: output/WhoisNET.Client.zip
 
   release:
@@ -80,7 +80,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET.zip
-        asset_name: WhoisNET-${{ github.run_id }}.zip
+        asset_name: whois-$(date +%s).zip
         asset_content_type: application/zip
     - name: Upload WhoisNET.Client Release Asset
       uses: actions/upload-release-asset@v1
@@ -89,5 +89,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET.Client.zip
-        asset_name: WhoisNET.Client-${{ github.run_id }}.zip
+        asset_name: whois-client-$(date +%s).zip
         asset_content_type: application/zip
