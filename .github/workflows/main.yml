@@ -31,7 +31,11 @@ jobs:
       run: |
         mkdir -p output
         dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o output/WhoisNET
-        zip -r output/WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip output/WhoisNET
+        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          zip -r output/WhoisNET-linux.zip output/WhoisNET
+        else
+          Compress-Archive -Path output/WhoisNET/* -DestinationPath output/WhoisNET-win.zip
+        fi
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -59,7 +63,11 @@ jobs:
       run: |
         mkdir -p output
         dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o output/WhoisNET.Client
-        zip -r output/WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip output/WhoisNET.Client
+        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          zip -r output/WhoisNET.Client-linux.zip output/WhoisNET.Client
+        else
+          Compress-Archive -Path output/WhoisNET.Client/* -DestinationPath output/WhoisNET.Client-win.zip
+        fi
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
