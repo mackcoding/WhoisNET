@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-whoisnet:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -35,11 +35,11 @@ jobs:
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: whois-${{ github.run_id }}
+        name: whois-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
         path: output/WhoisNET.zip
 
   build-whoisnet-client:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -63,7 +63,7 @@ jobs:
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: whois-client-${{ github.run_id }}
+        name: whois-client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
         path: output/WhoisNET.Client.zip
 
   release:
@@ -88,7 +88,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET.zip
-        asset_name: whois-${{ github.run_id }}.zip
+        asset_name: whois-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}.zip
         asset_content_type: application/zip
     - name: Upload WhoisNET.Client Release Asset
       uses: actions/upload-release-asset@v1
@@ -97,5 +97,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET.Client.zip
-        asset_name: whois-client-${{ github.run_id }}.zip
+        asset_name: whois-client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}.zip
         asset_content_type: application/zip
