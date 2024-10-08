@@ -93,7 +93,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         tag_name: v1.0.0
         release_name: Release v1.0.0
@@ -103,7 +103,7 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET-linux.zip
@@ -113,7 +113,7 @@ jobs:
       if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET-win.zip
@@ -123,7 +123,7 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET.Client-linux.zip
@@ -133,7 +133,7 @@ jobs:
       if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: output/WhoisNET.Client-win.zip
