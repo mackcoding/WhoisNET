@@ -27,16 +27,20 @@ jobs:
       run: dotnet test src/WhoisNET.Tests/WhoisNET.Tests.csproj --verbosity normal
     - name: Build WhoisNET
       run: dotnet build src/WhoisNET/WhoisNET.sln --configuration Release
-    - name: Package WhoisNET
+    - name: Package WhoisNET (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         mkdir -p output
         dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o output/WhoisNET
-        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-          zip -r output/WhoisNET-linux.zip output/WhoisNET
-        else
-          Compress-Archive -Path output/WhoisNET/* -DestinationPath output/WhoisNET-win.zip
-        fi
+        zip -r output/WhoisNET-linux.zip output/WhoisNET
       shell: bash
+    - name: Package WhoisNET (Windows)
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        mkdir output
+        dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o output/WhoisNET
+        Compress-Archive -Path output/WhoisNET/* -DestinationPath output/WhoisNET-win.zip
+      shell: pwsh
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -60,16 +64,20 @@ jobs:
       run: dotnet test src/WhoisNET.Client.Tests/WhoisNET.Client.Tests.csproj --verbosity normal
     - name: Build WhoisNET.Client
       run: dotnet build src/WhoisNET.Client/WhoisNET.Client.csproj --configuration Release
-    - name: Package WhoisNET.Client
+    - name: Package WhoisNET.Client (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         mkdir -p output
         dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o output/WhoisNET.Client
-        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-          zip -r output/WhoisNET.Client-linux.zip output/WhoisNET.Client
-        else
-          Compress-Archive -Path output/WhoisNET.Client/* -DestinationPath output/WhoisNET.Client-win.zip
-        fi
+        zip -r output/WhoisNET.Client-linux.zip output/WhoisNET.Client
       shell: bash
+    - name: Package WhoisNET.Client (Windows)
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        mkdir output
+        dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o output/WhoisNET.Client
+        Compress-Archive -Path output/WhoisNET.Client/* -DestinationPath output/WhoisNET.Client-win.zip
+      shell: pwsh
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
