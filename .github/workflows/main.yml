@@ -31,12 +31,12 @@ jobs:
       run: |
         mkdir -p output
         dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o output/WhoisNET
-        zip -r output/WhoisNET.zip output/WhoisNET
+        zip -r output/WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip output/WhoisNET
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
         name: whois-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
-        path: output/WhoisNET.zip
+        path: output/WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip
 
   build-whoisnet-client:
     runs-on: ${{ matrix.os }}
@@ -59,12 +59,12 @@ jobs:
       run: |
         mkdir -p output
         dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o output/WhoisNET.Client
-        zip -r output/WhoisNET.Client.zip output/WhoisNET.Client
+        zip -r output/WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip output/WhoisNET.Client
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
         name: whois-client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
-        path: output/WhoisNET.Client.zip
+        path: output/WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip
 
   release:
     runs-on: ubuntu-latest
@@ -81,21 +81,43 @@ jobs:
         release_name: Release v1.0.0
         draft: false
         prerelease: false
-    - name: Upload WhoisNET Release Asset
+    - name: Upload WhoisNET Release Asset (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/WhoisNET.zip
-        asset_name: whois-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}.zip
+        asset_path: output/WhoisNET-linux.zip
+        asset_name: whois-linux-${{ github.run_id }}.zip
         asset_content_type: application/zip
-    - name: Upload WhoisNET.Client Release Asset
+    - name: Upload WhoisNET Release Asset (Windows)
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/WhoisNET.Client.zip
-        asset_name: whois-client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}.zip
+        asset_path: output/WhoisNET-win.zip
+        asset_name: whois-win-${{ github.run_id }}.zip
+        asset_content_type: application/zip
+    - name: Upload WhoisNET.Client Release Asset (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: output/WhoisNET.Client-linux.zip
+        asset_name: whois-client-linux-${{ github.run_id }}.zip
+        asset_content_type: application/zip
+    - name: Upload WhoisNET.Client Release Asset (Windows)
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: output/WhoisNET.Client-win.zip
+        asset_name: whois-client-win-${{ github.run_id }}.zip
         asset_content_type: application/zip
