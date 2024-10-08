@@ -24,7 +24,7 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore src/WhoisNET/WhoisNET.sln
     - name: Run WhoisNET Tests
-      run: dotnet test src/WhoisNET.Tests/WhoisNET.Tests.csproj --no-build --verbosity normal
+      run: dotnet test src/WhoisNET.Tests/WhoisNET.Tests.csproj --verbosity normal
     - name: Build WhoisNET
       run: dotnet build src/WhoisNET/WhoisNET.sln --configuration Release
     - name: Package WhoisNET
@@ -52,7 +52,7 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore src/WhoisNET.Client/WhoisNET.Client.csproj
     - name: Run WhoisNET.Client Tests
-      run: dotnet test src/WhoisNET.Client.Tests/WhoisNET.Client.Tests.csproj --no-build --verbosity normal
+      run: dotnet test src/WhoisNET.Client.Tests/WhoisNET.Client.Tests.csproj --verbosity normal
     - name: Build WhoisNET.Client
       run: dotnet build src/WhoisNET.Client/WhoisNET.Client.csproj --configuration Release
     - name: Package WhoisNET.Client
