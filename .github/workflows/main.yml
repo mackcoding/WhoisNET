@@ -36,6 +36,7 @@ jobs:
         else
           Compress-Archive -Path output/WhoisNET/* -DestinationPath output/WhoisNET-win.zip
         fi
+      shell: bash
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -68,6 +69,7 @@ jobs:
         else
           Compress-Archive -Path output/WhoisNET.Client/* -DestinationPath output/WhoisNET.Client-win.zip
         fi
+      shell: bash
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
