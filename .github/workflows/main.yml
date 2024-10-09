@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - main
-      
+    tags:
+      - 'v*'
+
 permissions:
   contents: write
   issues: write
@@ -17,6 +19,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -30,22 +36,20 @@ jobs:
     - name: Package WhoisNET (Linux)
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
-        mkdir -p output
-        dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o output/WhoisNET
-        zip -r output/WhoisNET-linux.zip output/WhoisNET
+        dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o WhoisNET
+        zip -r WhoisNET-linux-${{ github.ref_name }}.zip WhoisNET
       shell: bash
     - name: Package WhoisNET (Windows)
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        mkdir output
-        dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o output/WhoisNET
-        Compress-Archive -Path output/WhoisNET/* -DestinationPath output/WhoisNET-win.zip
+        dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o WhoisNET
+        Compress-Archive -Path WhoisNET/* -DestinationPath WhoisNET-win-${{ github.ref_name }}.zip
       shell: pwsh
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
         name: whois-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
-        path: output/WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip
+        path: WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.ref_name }}.zip
 
   build-whoisnet-client:
     runs-on: ${{ matrix.os }}
@@ -54,6 +58,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -67,22 +75,20 @@ jobs:
     - name: Package WhoisNET.Client (Linux)
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
-        mkdir -p output
-        dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o output/WhoisNET.Client
-        zip -r output/WhoisNET.Client-linux.zip output/WhoisNET.Client
+        dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o WhoisNET.Client
+        zip -r WhoisNET.Client-linux-${{ github.ref_name }}.zip WhoisNET.Client
       shell: bash
     - name: Package WhoisNET.Client (Windows)
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        mkdir output
-        dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o output/WhoisNET.Client
-        Compress-Archive -Path output/WhoisNET.Client/* -DestinationPath output/WhoisNET.Client-win.zip
+        dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o WhoisNET.Client
+        Compress-Archive -Path WhoisNET.Client/* -DestinationPath WhoisNET.Client-win-${{ github.ref_name }}.zip
       shell: pwsh
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
         name: whois-client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
-        path: output/WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}.zip
+        path: WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.ref_name }}.zip
 
   release:
     runs-on: ubuntu-latest
@@ -91,12 +97,12 @@ jobs:
     - uses: actions/checkout@v4
     - name: Create GitHub Release
       id: create_release
-      uses: actions/create-release@v2
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
-        tag_name: v1.0.0
-        release_name: Release v1.0.0
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
         draft: false
         prerelease: false
     - name: Upload WhoisNET Release Asset (Linux)
@@ -106,8 +112,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/WhoisNET-linux.zip
-        asset_name: whois-linux-${{ github.run_id }}.zip
+        asset_path: WhoisNET-linux-${{ github.ref_name }}.zip
+        asset_name: whois-linux-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     - name: Upload WhoisNET Release Asset (Windows)
       if: ${{ matrix.os == 'windows-latest' }}
@@ -116,8 +122,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/WhoisNET-win.zip
-        asset_name: whois-win-${{ github.run_id }}.zip
+        asset_path: WhoisNET-win-${{ github.ref_name }}.zip
+        asset_name: whois-win-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     - name: Upload WhoisNET.Client Release Asset (Linux)
       if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -126,8 +132,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/WhoisNET.Client-linux.zip
-        asset_name: whois-client-linux-${{ github.run_id }}.zip
+        asset_path: WhoisNET.Client-linux-${{ github.ref_name }}.zip
+        asset_name: whois-client-linux-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     - name: Upload WhoisNET.Client Release Asset (Windows)
       if: ${{ matrix.os == 'windows-latest' }}
@@ -136,6 +142,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/WhoisNET.Client-win.zip
-        asset_name: whois-client-win-${{ github.run_id }}.zip
+        asset_path: WhoisNET.Client-win-${{ github.ref_name }}.zip
+        asset_name: whois-client-win-${{ github.ref_name }}.zip
         asset_content_type: application/zip
