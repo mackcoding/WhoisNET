@@ -1,0 +1,63 @@
+name: Release
+
+on: 
+    workflow_run:
+        workflows: ["Build Project"]
+        types:
+            - completed    
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+    run-build:
+        uses: ./github/workflows/build.yml
+
+    release:
+        runs-on: ${{ matrix.os }}
+        needs: run-build
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+        steps:
+        - uses: actions/checkout@latest
+        - name: Create release
+          uses: elgohr/Github-Release-Action@latest
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            title: Release ${{ github.ref_name }}
+            tag: ${{ github.ref_name }}
+
+        - name: Release Linux Library
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: $ {{ steps.create_release.outputs.upload_url }}
+            asset_path: whoisnet-lib-linux-${{ github.ref_name }}.zip
+
+        - name: Release Linux Client
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: $ {{ steps.create_release.outputs.upload_url }}
+            asset_path: whoisnet-client-linux-${{ github.ref_name }}.zip
+
+        - name: Release Windows Library
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: $ {{ steps.create_release.outputs.upload_url }}
+            asset_path: whoisnet-win-lib-${{ github.ref_name }}.zip
+
+        - name: Release Windows Client
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: $ {{ steps.create_release.outputs.upload_url }}
+            asset_path: whoisnet-win-client-${{ github.ref_name }}.zip
