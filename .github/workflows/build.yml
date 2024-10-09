@@ -8,7 +8,7 @@ on:
 
 jobs:
     run-tests:
-        uses: .github/workflows/tests.yml@main
+        uses: ./github/workflows/tests.yml@main
 
     build-whoisnet:
         runs-on: ${{ matrix.os }}
