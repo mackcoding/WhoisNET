@@ -19,7 +19,7 @@ jobs:
         steps:
         - uses: actions/checkout@v4
         - name: Create release
-          uses: elgohr/Github-Release-Action@latest
+          uses: elgohr/Github-Release-Action@v5
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
@@ -27,7 +27,7 @@ jobs:
             tag: ${{ github.ref_name }}
 
         - name: Release Linux Library
-          uses: actions/upload-release-asset@latest
+          uses: actions/upload-release-asset@v5
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
@@ -35,7 +35,7 @@ jobs:
             asset_path: whoisnet-lib-linux-${{ github.ref_name }}.zip
 
         - name: Release Linux Client
-          uses: actions/upload-release-asset@latest
+          uses: actions/upload-release-asset@v5
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
@@ -43,7 +43,7 @@ jobs:
             asset_path: whoisnet-client-linux-${{ github.ref_name }}.zip
 
         - name: Release Windows Library
-          uses: actions/upload-release-asset@latest
+          uses: actions/upload-release-asset@v5
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
@@ -51,7 +51,7 @@ jobs:
             asset_path: whoisnet-win-lib-${{ github.ref_name }}.zip
 
         - name: Release Windows Client
-          uses: actions/upload-release-asset@latest
+          uses: actions/upload-release-asset@v5
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
