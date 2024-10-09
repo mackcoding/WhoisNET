@@ -2,8 +2,6 @@ name: Build and Release
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
 
@@ -37,7 +35,8 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o WhoisNET
-        zip -r WhoisNET-linux-${{ github.ref_name }}.zip WhoisNET
+        cd WhoisNET
+        zip -r ../WhoisNET-linux-${{ github.ref_name }}.zip .
       shell: bash
     - name: Package WhoisNET (Windows)
       if: ${{ matrix.os == 'windows-latest' }}
@@ -48,7 +47,7 @@ jobs:
     - name: Upload WhoisNET Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: whois-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
+        name: WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.ref_name }}
         path: WhoisNET-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.ref_name }}.zip
 
   build-whoisnet-client:
@@ -76,7 +75,8 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o WhoisNET.Client
-        zip -r WhoisNET.Client-linux-${{ github.ref_name }}.zip WhoisNET.Client
+        cd WhoisNET.Client
+        zip -r ../WhoisNET.Client-linux-${{ github.ref_name }}.zip .
       shell: bash
     - name: Package WhoisNET.Client (Windows)
       if: ${{ matrix.os == 'windows-latest' }}
@@ -87,7 +87,7 @@ jobs:
     - name: Upload WhoisNET.Client Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: whois-client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.run_id }}
+        name: WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.ref_name }}
         path: WhoisNET.Client-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'win' }}-${{ github.ref_name }}.zip
 
   release:
@@ -101,7 +101,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag: ${{ github.ref_name }}
-        name: Release ${{ github.ref_name }}
+        title: Release ${{ github.ref_name }}
         files: |
           WhoisNET-linux-${{ github.ref_name }}.zip
           WhoisNET-win-${{ github.ref_name }}.zip
