@@ -96,52 +96,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
+      uses: elgohr/Github-Release-Action@v5
       env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: false
-    - name: Upload WhoisNET Release Asset (Linux)
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: WhoisNET-linux-${{ github.ref_name }}.zip
-        asset_name: whois-linux-${{ github.ref_name }}.zip
-        asset_content_type: application/zip
-    - name: Upload WhoisNET Release Asset (Windows)
-      if: ${{ matrix.os == 'windows-latest' }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: WhoisNET-win-${{ github.ref_name }}.zip
-        asset_name: whois-win-${{ github.ref_name }}.zip
-        asset_content_type: application/zip
-    - name: Upload WhoisNET.Client Release Asset (Linux)
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: WhoisNET.Client-linux-${{ github.ref_name }}.zip
-        asset_name: whois-client-linux-${{ github.ref_name }}.zip
-        asset_content_type: application/zip
-    - name: Upload WhoisNET.Client Release Asset (Windows)
-      if: ${{ matrix.os == 'windows-latest' }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_SECRET }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: WhoisNET.Client-win-${{ github.ref_name }}.zip
-        asset_name: whois-client-win-${{ github.ref_name }}.zip
-        asset_content_type: application/zip
+        tag: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        files: |
+          WhoisNET-linux-${{ github.ref_name }}.zip
+          WhoisNET-win-${{ github.ref_name }}.zip
+          WhoisNET.Client-linux-${{ github.ref_name }}.zip
+          WhoisNET.Client-win-${{ github.ref_name }}.zip
