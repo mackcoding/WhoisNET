@@ -11,12 +11,8 @@ permissions:
   contents: write
 
 jobs:
-    run-build:
-        uses: .github/workflows/build.yml@main
-
     release:
-        runs-on: ${{ matrix.os }}
-        needs: run-build
+        runs-on: ${{ matrix.os }
         strategy:
             matrix:
                 os: [ubuntu-latest, windows-latest]
