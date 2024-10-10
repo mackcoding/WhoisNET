@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Release
 
 on:
   push:
@@ -54,16 +54,17 @@ jobs:
       - name: Update .NET workloads
         run: dotnet workload update
       - name: Build and package
+        shell: pwsh
         run: |
           dotnet publish src/WhoisNET/WhoisNET.csproj -c Release -o WhoisNET
           dotnet publish src/WhoisNET.Client/WhoisNET.Client.csproj -c Release -o WhoisNET.Client
-          if [ "${{ runner.os }}" == "Linux" ]; then
+          if ($IsLinux) {
             zip -r whoisnet-lib-linux-${{ github.ref_name }}.zip WhoisNET
             zip -r whoisnet-client-linux-${{ github.ref_name }}.zip WhoisNET.Client
-          else
-            powershell Compress-Archive -Path WhoisNET/* -DestinationPath whoisnet-win-lib-${{ github.ref_name }}.zip
-            powershell Compress-Archive -Path WhoisNET.Client/* -DestinationPath whoisnet-win-client-${{ github.ref_name }}.zip
-          fi
+          } else {
+            Compress-Archive -Path WhoisNET/* -DestinationPath whoisnet-win-lib-${{ github.ref_name }}.zip
+            Compress-Archive -Path WhoisNET.Client/* -DestinationPath whoisnet-win-client-${{ github.ref_name }}.zip
+          }
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
