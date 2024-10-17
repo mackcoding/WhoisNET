@@ -87,7 +87,7 @@ namespace WhoisNET
                 await using TcpHandler tcp = new(server, queryPort);
                 var dataToSend = query;
 
-                dataToSend = $"{CustomQueryCommand(server)}{query}";
+                dataToSend = $"{CustomQueryCommand(server)}{query}".Trim();
 
                 await tcp.WriteAsync(dataToSend);
                 response = await tcp.ReadAsync();
@@ -159,6 +159,7 @@ namespace WhoisNET
             try
             {
                 var hostName = await Dns.GetHostEntryAsync($"{tld}.whois-servers.net");
+      
                 Debug.WriteDebug($"Queried '{tld}.whois-servers.net' and received '{hostName.HostName}'.");
                 return hostName.HostName ?? defaultWhoisServer;
             }
