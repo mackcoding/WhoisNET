@@ -8,10 +8,12 @@ namespace WhoisNET.Network
     /// </summary>
     /// <param name="hostname">(optional) WHOIS server hostname</param>
     /// <param name="queryPort">(optional) WHOIS server port</param>
-    public class TcpHandler(string hostname = "whois.iana.org", int queryPort = 43) : IAsyncDisposable
+    /// <param name="timeout">(optional) Connection timeout (30 seconds)</param>
+    public class TcpHandler(string hostname = "whois.iana.org", int queryPort = 43, TimeSpan? timeout = null) : IAsyncDisposable
     {
         private readonly TcpClient _client = new();
         private NetworkStream? _stream;
+        private bool _disposed;
 
         /// <summary>
         /// Establishes an asynchronous connection to the specified hostname and port.
@@ -19,6 +21,11 @@ namespace WhoisNET.Network
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+
+            _client.SendTimeout = timeout?.Milliseconds ?? 30000;
+            _client.ReceiveTimeout = timeout?.Milliseconds ?? 30000;
+
             try
             {
                 Debug.WriteDebug($"Connecting to {hostname}:{queryPort}.");
@@ -40,6 +47,8 @@ namespace WhoisNET.Network
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         public async Task WriteAsync(string data, CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+
             if (!_client.Connected)
                 await ConnectAsync(cancellationToken).ConfigureAwait(false);
 
@@ -71,6 +80,8 @@ namespace WhoisNET.Network
         /// <returns>A string containing the read data.</returns>
         public async Task<string> ReadAsync(CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+
             if (!_client.Connected)
                 await ConnectAsync(cancellationToken).ConfigureAwait(false);
 
@@ -80,7 +91,7 @@ namespace WhoisNET.Network
             try
             {
                 using var memoryStream = new MemoryStream();
-                var buffer = new byte[1024];
+                var buffer = new byte[4096];
                 int bytesRead;
 
                 while ((bytesRead = await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
@@ -107,8 +118,21 @@ namespace WhoisNET.Network
         /// </summary>
         public async ValueTask DisposeAsync()
         {
-            await DisposeAsyncCore().ConfigureAwait(false);
-            GC.SuppressFinalize(this);
+            if (!_disposed)
+            {
+                await DisposeAsyncCore().ConfigureAwait(false);
+                _disposed = true;
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        /// <summary>
+        /// Throws an exception if the object is disposed already. 
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">Disposed object</exception>
+        private void ThrowIfDisposed()
+        {
+            ObjectDisposedException.ThrowIf(_disposed, nameof(TcpHandler));
         }
 
         /// <summary>
