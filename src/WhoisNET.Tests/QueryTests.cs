@@ -20,6 +20,7 @@ namespace WhoisNET.Tests
         [TestCase("2600::", "Sprint")]
         [TestCase("192.168.1.1", "remarks:      http://www.iana.org/go/rfc1918")]
         [TestCase("204.2.29.86", "OrgTechHandle: CANDE70-ARIN")]
+        [Retry(3)]
         public async Task WhoisClientAsyncTest(string domain, string expectedSubstring)
         {
             string response = await Whois.QueryAsync(domain);
