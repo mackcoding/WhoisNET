@@ -10,6 +10,9 @@ namespace WhoisNET.Parser
     {
         private readonly Dictionary<string, string> tokens = new(StringComparer.OrdinalIgnoreCase);
 
+        [GeneratedRegex(@"http(s)?://", RegexOptions.Compiled)]
+        private static partial Regex RemoveHttpsRegex();
+
         /// <summary>
         /// Tokenizes the whois data into a token dictionary.
         /// </summary>
@@ -84,7 +87,7 @@ namespace WhoisNET.Parser
         {
             if (string.IsNullOrEmpty(line) ||
                     CharGroupMatch(line, ['#', '%', '>', '\t']) ||
-                    CharGroupMatch(line, ['<'], false))
+                    CharGroupMatch(line, ['<']))
                 return true;
 
             if (HasColonWithMaxSpaces(line))
@@ -140,9 +143,8 @@ namespace WhoisNET.Parser
         /// </summary>
         /// <param name="line">String of the text to check</param>
         /// <param name="target">Array of targets to find</param>
-        /// <param name="firstChar">(not implemented) true = match first char only, otherwise match entire line</param>
         /// <returns>true if a match is found, otherwise false</returns>
-        private static bool CharGroupMatch(string line, char[] target, bool? firstChar = true)
+        private static bool CharGroupMatch(string line, char[] target)
         {
             return line.Length > 0 && Array.Exists(target, c => c == line[0]);
         }
@@ -198,8 +200,7 @@ namespace WhoisNET.Parser
             return RemoveHttpsRegex().Replace(line, "").Trim();
         }
 
-        // todo: very simple regex, not sure if we should eliminate or not.
-        [GeneratedRegex("https?://")]
-        private static partial Regex RemoveHttpsRegex();
+
+
     }
 }
