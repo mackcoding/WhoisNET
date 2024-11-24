@@ -82,56 +82,60 @@ namespace WhoisNET
             if (retries > 5)
                 Debug.ThrowException("Too many referral retry requests.");
 
-            try
+            const int maxAttempts = 5;
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
-                await using TcpHandler tcp = new(server, queryPort);
-                var dataToSend = query;
+                try
+                {
+                    await using TcpHandler tcp = new(server, queryPort);
+                    var dataToSend = $"{CustomQueryCommand(server)}{query}";
 
                 dataToSend = $"{CustomQueryCommand(server)}{query}".Trim();
 
                 await tcp.WriteAsync(dataToSend);
                 response = await tcp.ReadAsync();
 
-                Debug.WriteVerbose($"received response: \n----\n{response}\n----");
+                    Debug.WriteVerbose($"received response: \n----\n{response}\n----");
 
-                if (followReferral)
+                    if (followReferral)
+                    {
+                        var referral = Utilities.GetReferral(response);
+                        var (host, port) = referral.Split(':') is var parts && parts.Length > 1 && int.TryParse(parts[1], out var parsedPort) ? (parts[0], parsedPort) : (referral, 43);
+
+                        Debug.WriteVerbose($"got referral: {referral}, got host and port: {host}:{port}");
+
+                        if (CheckIfReferralIsBlacklisted(host))
+                        {
+                            Debug.WriteDebug($"Host is found on blacklist: {host}");
+                            host = string.Empty;
+                        }
+
+                        if (!string.IsNullOrEmpty(host))
+                        {
+                            retries++;
+                            Debug.WriteDebug($"Following referral '{host}:{port}', attempt #{retries}.");
+                            return await QueryAsync(
+                                query,
+                                whoisServer: host,
+                                followReferral: followReferral,
+                                retries: retries,
+                                queryPort: port);
+                        }
+                    }
+
+                    return response ?? string.Empty;
+                }
+                catch (Exception ex) when (ex is SocketException || (ex is IOException && ex.InnerException is SocketException))
                 {
-                    var referral = Utilities.GetReferral(response);
-                    var (host, port) = referral.Split(':') is var parts && parts.Length > 1 && int.TryParse(parts[1], out var parsedPort) ? (parts[0], parsedPort) : (referral, 43);
+                    if (attempt == maxAttempts - 1)
+                        Debug.ThrowException($"Failed after {maxAttempts} attempts: {ex.Message}");
 
-                    Debug.WriteVerbose($"got referral: {referral}, got host and port: {host}:{port}");
-
-                    if (CheckIfReferralIsBlacklisted(host))
-                    {
-                        Debug.WriteDebug($"Host is found on blacklist: {host}");
-                        host = string.Empty;
-                    }
-
-                    if (!string.IsNullOrEmpty(host))
-                    {
-                        retries++;
-                        Debug.WriteDebug($"Following referral '{host}:{port}', attempt #{retries}.");
-                        return await QueryAsync(
-                            query,
-                            whoisServer: host,
-                            followReferral: followReferral,
-                            retries: retries,
-                            queryPort: port);
-                    }
+                    Debug.WriteDebug($"Attempt {attempt + 1} failed, retrying...");
+                    await Task.Delay(1000 * (attempt + 1)); // Exponential backoff
                 }
             }
-            catch (SocketException ex)
-            {
-                Debug.ThrowException($"{ex.Message}");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Debug.ThrowException($"Exception: {ex.Message}");
-                throw;
-            }
 
-            return response ?? string.Empty;
+            return string.Empty; // Should never reach here due to exception in loop
         }
 
         /// <summary>
