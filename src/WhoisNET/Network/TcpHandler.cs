@@ -14,6 +14,7 @@ namespace WhoisNET.Network
         private readonly TcpClient _client = new();
         private NetworkStream? _stream;
         private bool _disposed;
+        private const int BufferSize = 4096;
 
         /// <summary>
         /// Establishes an asynchronous connection to the specified hostname and port.
@@ -91,7 +92,7 @@ namespace WhoisNET.Network
             try
             {
                 using var memoryStream = new MemoryStream();
-                var buffer = new byte[4096];
+                var buffer = new byte[BufferSize];
                 int bytesRead;
 
                 while ((bytesRead = await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
