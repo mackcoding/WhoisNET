@@ -8,7 +8,7 @@ namespace WhoisNET.Parser
     /// </summary>
     public static class ReferralParser
     {
-        private static readonly List<string> _keywords = [
+        private static readonly IReadOnlyList<string> _keywords = [
             "refer",
             "whois",
             "referralserver",
@@ -70,10 +70,10 @@ namespace WhoisNET.Parser
             }
 
 
-            if (!int.TryParse(port.ToString(), out int portnum))
-                portnum = 53;
+            if (!int.TryParse(port.ToString(), out int portnum) || portnum <= 0 || portnum > 65535)
+                portnum = 43;
 
-                return (host.ToString(), portnum);
+            return (host.ToString(), portnum);
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace WhoisNET
         /// <summary>
         /// Defines the default level of debugging to use.
         /// </summary>
-        private static LogLevel _logLevel = LogLevel.Off;
+        private static volatile LogLevel _logLevel = LogLevel.Off;
 
         /// <summary>
         /// Writes to the console with specified message.

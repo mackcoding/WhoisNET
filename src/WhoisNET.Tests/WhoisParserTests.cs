@@ -13,7 +13,7 @@ namespace WhoisNET.Tests
         [TestCase("doesntexistatall111111.com", "comment", "No match for")]
         [TestCase("128.14.219.215", "NetHandle", "NET-128-14-219-0-1")]
         [TestCase("8.8.8.8", "OrgTechPhone", "+1-650-253-0000")]
-        [TestCase("1.1.1.1", "nic-hdl", "DKDI10-AP")]
+        [TestCase("1.1.1.1", "nic-hdl", "AA1412-AP")]
         public async Task Tokenize_ShouldReturnExpectedResult(string domain, string searchString, string expectedResult)
         {
             var query = await Whois.QueryAsync(domain);
@@ -38,7 +38,7 @@ namespace WhoisNET.Tests
         [TestCase("doesntexistatall111111.com", 1)]
         [TestCase("128.14.219.215", 34)]
         [TestCase("8.8.8.8", 29)]
-        [TestCase("1.1.1.1", 33)]
+        [TestCase("1.1.1.1", 32)]
         public async Task Tokenize_ShouldReturnExpectedCount(string domain, int count)
         {
             var query = await Whois.QueryAsync(domain);

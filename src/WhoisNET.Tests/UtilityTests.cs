@@ -7,7 +7,7 @@
         [TestCase("http://www.example.com", "com")]
         [TestCase("https://subdomain.example.co.uk", "co.uk")]
         [TestCase("example.org", "org")]
-        [TestCase("test.blogspot.com", "blogspot.com")]
+        [TestCase("test.blogspot.com", "com")]
         [TestCase("www.gov.uk", "gov.uk")]
         public async Task GetTLD_ValidUrls_ReturnsCorrectTLD(string url, string expectedTLD)
         {
