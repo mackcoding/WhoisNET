@@ -8,7 +8,7 @@ namespace WhoisNET.Parser
     /// </summary>
     public static class ReferralParser
     {
-        private static readonly List<string> _keywords = [
+        private static readonly IReadOnlyList<string> _keywords = [
             "refer",
             "whois",
             "referralserver",

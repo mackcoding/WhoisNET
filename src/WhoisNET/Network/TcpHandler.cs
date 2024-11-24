@@ -95,7 +95,8 @@ namespace WhoisNET.Network
                 var buffer = new byte[BufferSize];
                 int bytesRead;
 
-                while ((bytesRead = await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
+                while (!cancellationToken.IsCancellationRequested &&
+                       (bytesRead = await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
                     await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken).ConfigureAwait(false);
 
                 memoryStream.Position = 0;
@@ -141,11 +142,17 @@ namespace WhoisNET.Network
         /// </summary>
         protected virtual async ValueTask DisposeAsyncCore()
         {
-            if (_stream != null)
+            try
             {
-                await _stream.DisposeAsync().ConfigureAwait(false);
+                if (_stream != null)
+                {
+                    await _stream.DisposeAsync().ConfigureAwait(false);
+                }
             }
-            _client.Dispose();
+            finally
+            {
+                _client.Dispose();
+            }
         }
     }
 }
