@@ -70,10 +70,10 @@ namespace WhoisNET.Parser
             }
 
 
-            if (!int.TryParse(port.ToString(), out int portnum))
+            if (!int.TryParse(port.ToString(), out int portnum) || portnum <= 0 || portnum > 65535)
                 portnum = 43;
 
-                return (host.ToString(), portnum);
+            return (host.ToString(), portnum);
         }
 
         /// <summary>

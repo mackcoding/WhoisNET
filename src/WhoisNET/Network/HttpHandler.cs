@@ -9,7 +9,8 @@
         // todo: implement a way to allow the timeout to be changed
         private static readonly HttpClient _sharedClient = new()
         {
-            Timeout = TimeSpan.FromSeconds(30)  
+            Timeout = TimeSpan.FromSeconds(30),
+            DefaultRequestVersion = new Version(2, 0)
         };
         private bool _disposed;
 
