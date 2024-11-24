@@ -71,7 +71,7 @@ namespace WhoisNET.Parser
 
 
             if (!int.TryParse(port.ToString(), out int portnum))
-                portnum = 53;
+                portnum = 43;
 
                 return (host.ToString(), portnum);
         }

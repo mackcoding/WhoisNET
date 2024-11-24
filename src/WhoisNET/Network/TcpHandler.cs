@@ -23,8 +23,8 @@ namespace WhoisNET.Network
         {
             ThrowIfDisposed();
 
-            _client.SendTimeout = timeout?.Milliseconds ?? 30000;
-            _client.ReceiveTimeout = timeout?.Milliseconds ?? 30000;
+            _client.SendTimeout = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : 30000;
+            _client.ReceiveTimeout = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : 30000;
 
             try
             {
