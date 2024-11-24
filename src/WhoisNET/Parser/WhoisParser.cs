@@ -10,6 +10,9 @@ namespace WhoisNET.Parser
     {
         private readonly Dictionary<string, string> tokens = new(StringComparer.OrdinalIgnoreCase);
 
+        [GeneratedRegex(@"http(s)?://", RegexOptions.Compiled)]
+        private static partial Regex RemoveHttpsRegex();
+
         /// <summary>
         /// Tokenizes the whois data into a token dictionary.
         /// </summary>
@@ -197,8 +200,7 @@ namespace WhoisNET.Parser
             return RemoveHttpsRegex().Replace(line, "").Trim();
         }
 
-        // todo: very simple regex, not sure if we should eliminate or not.
-        [GeneratedRegex("https?://")]
-        private static partial Regex RemoveHttpsRegex();
+
+
     }
 }
