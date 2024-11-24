@@ -37,33 +37,45 @@ namespace WhoisNET
             string domain = uri.Host;
             Debug.WriteVerbose($"Set domain to: {domain}");
 
-
             try
             {
                 if (suffixes.IsEmpty)
                 {
                     Debug.WriteVerbose($"suffixes.IsEmpty = true");
                     await using var client = new HttpHandler(_suffixListURL);
+                    bool isIcannSection = false;
+
                     await foreach (var line in client.GetContentByLineAsync())
                     {
-                        if (!line.StartsWith("//") && !line.TrimStart().StartsWith("*.") && !string.IsNullOrEmpty(line))
-                            suffixes.Add(line.Trim());
+                        if (line.Contains("===BEGIN ICANN DOMAINS==="))
+                        {
+                            isIcannSection = true;
+                            continue;
+                        }
+                        if (line.Contains("===END ICANN DOMAINS==="))
+                        {
+                            break;
+                        }
+
+                        if (isIcannSection && !string.IsNullOrEmpty(line) && !line.StartsWith("//"))
+                        {
+                            var suffix = line.Trim();
+                            if (!suffix.StartsWith("*."))
+                                suffixes.Add(suffix);
+                        }
                     }
                 }
 
                 var parts = domain.Split('.');
                 Debug.WriteVerbose($"Domain split by .; parts has {parts.Length} value(s)");
-                for (int i = 0; i < parts.Length - 1; i++)
+
+                for (int i = parts.Length - 2; i >= 0; i--)
                 {
-                    var tld = string.Join('.', parts.Skip(i));
-                    if (suffixes.Contains(tld))
-                    {
-                        Debug.WriteVerbose($"Found tld: {tld}");
-                        return tld;
-                    }
+                    var possible = string.Join('.', parts.Skip(i));
+                    if (suffixes.Contains(possible))
+                        return possible;
                 }
 
-                Debug.WriteVerbose($"Returning {parts[^1]}");
                 return parts[^1];
             }
             catch (Exception ex)
@@ -73,7 +85,6 @@ namespace WhoisNET
                 throw;
             }
         }
-
 
 
         /// <summary>
