@@ -4,15 +4,14 @@
     /// Handles HTTP requests and content retrieval.
     /// </summary>
     /// <param name="url">The default URL to use for requests.</param>
-    public class HttpHandler(string? url = null) : IAsyncDisposable
+    public class HttpHandler(string? url = null) 
     {
         // todo: implement a way to allow the timeout to be changed
         private static readonly HttpClient _sharedClient = new()
         {
-            Timeout = TimeSpan.FromSeconds(30),
-            DefaultRequestVersion = new Version(2, 0)
+            Timeout = TimeSpan.FromSeconds(30)
         };
-        private bool _disposed;
+        private readonly bool _disposed;
 
         /// <summary>
         /// Reads the entire content from the specified URI asynchronously.
@@ -61,16 +60,6 @@
                 Debug.ThrowException($"HTTP request failed: {ex.Message}", exception: ex);
                 throw;
             }
-        }
-
-        /// <summary>
-        /// Asynchronously releases the unmanaged resources used by the HttpHandler.
-        /// </summary>
-        public ValueTask DisposeAsync()
-        {
-            _disposed = true;
-            GC.SuppressFinalize(this);
-            return ValueTask.CompletedTask;
         }
 
         /// <summary>
