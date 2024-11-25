@@ -353,3 +353,10 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+<<<<<<< Updated upstream
+=======
+
+.idea/
+.idea
+.idea/*
+>>>>>>> Stashed changes
