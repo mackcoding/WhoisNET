@@ -355,3 +355,5 @@ MigrationBackup/
 .ionide/
 
 .idea/
+.idea
+.idea/*
