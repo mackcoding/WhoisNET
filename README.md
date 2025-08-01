@@ -1,5 +1,7 @@
 # Project Goals
 
+**NOTE** This project is not dead, other priorities have taken over!
+
 The primary goal of this project is to build a library that enables C# developers to query IP addresses and domains. Although still under heavy development, it aims to fully support querying against both RDAP and WHOIS. Currently, the data is converted into a Dictionary<key, value> format for use, such as retrieving abuse information. In the future, there will be an option to output data in JSON format.
 
 This project consists of two main components:
